@@ -1,0 +1,34 @@
+Created by PLY version 3.10 (http://www.dabeaz.com/ply)
+
+Unused terminals:
+
+    MINUS
+    DIVIDE
+
+Grammar
+
+Rule 0     S' -> assign
+Rule 1     assign -> NAME EQUALS expr
+Rule 2     expr -> expr PLUS term
+Rule 3     term -> term TIMES factor
+Rule 4     term -> factor
+Rule 5     factor -> NUMBER
+
+Terminals, with rules where they appear
+
+DIVIDE               : 
+EQUALS               : 1
+MINUS                : 
+NAME                 : 1
+NUMBER               : 5
+PLUS                 : 2
+TIMES                : 3
+error                : 
+
+Nonterminals, with rules where they appear
+
+assign               : 0
+expr                 : 1 2
+factor               : 3 4
+term                 : 2 3
+
