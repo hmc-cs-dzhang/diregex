@@ -3,9 +3,9 @@ import diregex_lexer
 from diregex_ir import *
 tokens = diregex_lexer.tokens
 
-## Parses the grammar into the abstract syntax, represented in ir.py
+# Parses the grammar into the abstract syntax, represented in ir.py
 
-############################ PARSERS ########################
+########################### PARSERS ########################
 
 def p_treePattern_dir(p):
     '''treePattern : dirItem '''
@@ -22,6 +22,10 @@ def p_treePattern_many(p):
 def p_treePatternList(p):
     '''treePatternList : treePattern
                        | treePattern COMMA treePatternList'''
+    if len(p) == 2:
+        p[0] = [p[1]]
+    else:
+        p[0] = [p[1]] + p[3]
 
 def p_dirItem(p):
     '''dirItem : dirName
@@ -35,11 +39,14 @@ def p_dirName(p):
     '''dirName : REGEX
                | REGEX EQUALS VAR'''
     if len(p) == 2:
-        p[0] = DirName(p[1])
+        p[0] = DirName(p[1].strip("\""))
     else:
-        p[0] = DirName(p[1], p[3])
+        p[0] = DirName(p[1].strip("\""), p[3])
 
-yacc.yacc()
+def p_error(p):
+    print("cannot parse " + repr(p))
+
+parser = yacc.yacc()
 
 def parse(st):
-    yacc.parse(st)
+    return parser.parse(st)

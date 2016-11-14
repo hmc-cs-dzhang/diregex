@@ -18,8 +18,13 @@ t_GT = r'>'
 t_COMMA = r','
 t_LPAREN = r'\('
 t_RPAREN = r'\)'
+t_REGEX = r'\"[a-zA-Z0-9_\*\[\]\-]+\"'
 t_VAR = r'[a-zA-Z_][a-zA-Z0-9_]*'
-t_REGEX = r'\"[a-zA-Z_][a-zA-Z0-9_\*]*\"'
+
+# Error handling rule from PLY manual
+def t_error(t):
+    print("Illegal character '%s'" % t.value[0])
+    t.lexer.skip(1)
 
 lex.lex()
 

@@ -27,20 +27,24 @@ class Node(object):
     def __eq__(self, other):
         return self.__dict__ == other.__dict__
 
+    def __repr__(self):
+        st = ""
+        for key in self.__dict__:
+            st += repr(key) + ": " + repr(self.__dict__[key])
+            st += "\n"
+        return st
+
 # abstract class, representing the three cases of tree patterns
 class TreePattern(Node):
     pass
 
 class TreePattern_Dir(TreePattern):
-    def __init__(self, item):
-        self.item = item
-
-    def __repr__(self):
-        return "(TreePattern: " + repr(self.item) + ")"
+    def __init__(self, dirItem):
+        self.dirItem = dirItem
 
 class TreePattern_Child(TreePattern):
-    def __init__(self, item, treePattern):
-        self.item = item
+    def __init__(self, dirItem, treePattern):
+        self.dirItem = dirItem
         self.treePattern = treePattern
 
 class TreePattern_List(TreePattern):
@@ -52,7 +56,7 @@ class DirItem(Node):
     # modifier could be GT which represents descedent
     # TODO: future iterations specify exact generation or range of generations
     def __init__(self, dirName, modifier=None):
-        self.dirName = dirName,
+        self.dirName = dirName
         self.modifier = modifier
 
 class DirName(Node):

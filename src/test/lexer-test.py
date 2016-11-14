@@ -14,13 +14,18 @@ def testLinearPath():
                ('SLASH', "/"),
                ('REGEX', "\"child\"")])
 
+def testRegex():
+    toks = lexer("\"A*[A-z0-9]\"")
+    eq_(toks, [('REGEX', "\"A*[A-z0-9]\"")])
+
 def testTree():
-    toks = lexer("\"parent\"/(\"child1\", \"chil*\"=match)")
+    toks = lexer("\"parent\"/(\"child1\", >\"chil*\"=match)")
     eq_(toks, [('REGEX', "\"parent\""),
                ('SLASH', "/"),
                ('LPAREN', "("),
                ('REGEX', "\"child1\""),
                ('COMMA', ","),
+               ('GT', ">"),
                ('REGEX', "\"chil*\""),
                ('EQUALS', "="),
                ('VAR', "match"),
