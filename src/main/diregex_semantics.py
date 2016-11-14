@@ -19,18 +19,29 @@ class Matcher(NodeVisitor):
 
     def visit_TreePattern_Dir(self, node, path):
         # return node.dirItem matches with the current node
-        return self.visit(node.dirItem.dirName, path)
+        results = self.visit(node.dirItem.dirName, path)
+        for name, var in results:
+            if var:
+                yield {var: name}
+            else:
+                yield {}
 
     def visit_TreePattern_Child(self, node, path):
         # return node.dirItem matches with currNode and
         # visit tree pattern with child node
         names = self.visit(node.dirItem.dirName, path)
-        for name in names:
+        for name, var in names:
+
+            # visit children
             newPath = os.path.join(path, name)
             children = self.visit(node.treePattern, newPath)
-            for child in children:
-                yield name + ", " + repr(child)
 
+            for child in children:
+                #if the node was named, at it to the dictionary
+                if var:
+                    newVar = {var : name}
+                    child.update(newVar)
+                yield child
 
     def visit_TreePattern_List(self, node, path):
         patterns = []
@@ -54,5 +65,5 @@ class Matcher(NodeVisitor):
         for d in dirs:
             match = re.fullmatch(node.regexPattern, d.name)
             if match:
-                yield match.string
+                yield match.string, node.var
 

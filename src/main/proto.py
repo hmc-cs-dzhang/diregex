@@ -17,10 +17,10 @@ def match(diregex):
 
 
 print("----Example 1------")
-match("\"parent\"")
+match("\"parent\"=p")
 
 print("----Example 2------")
-match("\"[a-z]*\"/\"[a-z0-9]*\"")
+match("\"[a-z]*\"=foo/\"[a-z0-9]*\"=bar")
 
 print("----Example 3------")
 match("\"parent\"/(\"ch[a-z0-9]*\", \"[a-z0-9]*\")")
