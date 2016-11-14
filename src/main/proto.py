@@ -11,17 +11,23 @@ def match(diregex):
     ast = parse(diregex)
 
     matcher = Matcher()
-    matches = matcher.visit(ast, os.getcwd())
-    for match in matches:
+    matches = {}
+
+    for match in matcher.visit(ast, os.getcwd()):
         print(match)
 
 
 print("----Example 1------")
-match("\"parent\"=p")
+match('"parent"=p/"child[1-2]"')
 
 print("----Example 2------")
-match("\"[a-z]*\"=foo/\"[a-z0-9]*\"=bar")
+match('"[a-z]*"=foo/"[a-z0-9]*"=bar')
 
 print("----Example 3------")
-match("\"parent\"/(\"ch[a-z0-9]*\", \"[a-z0-9]*\")")
+match('"parent"=foo/"child[1-2]*"=bar/"[a-z0-9.]*"')
+
+#match(' "p[a-z]*"/".*"=dir/"file[0-9]\..*"=file ')
+
+print("----Example 4------")
+match('"parent"/("ch[a-z0-9]*"=c1, "[a-z0-9]*"=c2)')
 

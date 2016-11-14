@@ -1,5 +1,6 @@
 import os
 import re
+import itertools
 from diregex_ir import *
 
 ## Use the visitor pattern, from Let's Build a Simple Interpreter
@@ -19,44 +20,50 @@ class Matcher(NodeVisitor):
 
     def visit_TreePattern_Dir(self, node, path):
         # return node.dirItem matches with the current node
-        results = self.visit(node.dirItem.dirName, path)
-        for name, var in results:
+        for var, name in self.visit(node.dirItem.dirName, path):
             if var:
-                yield {var: name}
+                yield {var : os.path.join(path,name)}
             else:
                 yield {}
 
     def visit_TreePattern_Child(self, node, path):
         # return node.dirItem matches with currNode and
         # visit tree pattern with child node
-        names = self.visit(node.dirItem.dirName, path)
-        for name, var in names:
+        parentMatches = self.visit(node.dirItem.dirName, path)
+        for var, name in parentMatches:
+            oneMatch = {}
+            if var:
+                oneMatch = {var : os.path.join(path,name)}
 
             # visit children
             newPath = os.path.join(path, name)
             children = self.visit(node.treePattern, newPath)
 
             for child in children:
-                #if the node was named, at it to the dictionary
-                if var:
-                    newVar = {var : name}
-                    child.update(newVar)
+                #if the node was named, it will be added to dict
+                child.update(oneMatch)
                 yield child
 
-    def visit_TreePattern_List(self, node, path):
-        patterns = []
-        for pattern in node.treePatterns:
-            match = self.visit(pattern, path)
-            thisMatch = []
-            for m in match:
-                thisMatch += [m]
-            patterns += [thisMatch]
-
-        return patterns
 
         # call visit for each of the children
 
-    def visit_DirItem(self, node, currDir):
+    def visit_TreePattern_ListHelper(patterns, path, matches):
+        if patterns == []:
+            return
+        for pattern in patterns:
+            for match in self.visit(pattern, path, matches):
+                yield visit_TreePattern_ListHelper(patterns[1:], path, matches)
+
+
+    def visit_TreePattern_List(self, node, path):
+        generators = [self.visit(treePattern, path) for treePattern in node.treePatterns]
+        for result in itertools.product(*generators):
+            matches = {}
+            for match in result:
+                matches.update(match)
+            yield matches
+
+    def visit_DirItem(self, node, currDir, matches):
         # call visit node.dirName to check that it matches the folder
         return self.visit(node.dirName, currDir)
 
@@ -65,5 +72,6 @@ class Matcher(NodeVisitor):
         for d in dirs:
             match = re.fullmatch(node.regexPattern, d.name)
             if match:
-                yield match.string, node.var
+                # if the variable is not null, add it to the dictionary
+                yield node.var, match.string
 
