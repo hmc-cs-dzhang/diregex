@@ -40,16 +40,22 @@ class Node(object):
 class TreePattern(Node):
     pass
 
-class TreePattern_Dir(TreePattern):
+class TreePatternDir(TreePattern):
     def __init__(self, dirItem):
         self.dirItem = dirItem
 
-class TreePattern_Child(TreePattern):
+class TreePatternChild(TreePattern):
     def __init__(self, dirItem, treePattern):
         self.dirItem = dirItem
         self.treePattern = treePattern
 
-class TreePattern_List(TreePattern):
+''' Like a TreePatternChild, but matches in current directory
+    or any descendant'''
+class TreePatternDescendant(TreePattern):
+    def __init__(self, treePattern):
+        self.treePattern = treePattern
+
+class TreePatternList(TreePattern):
     # takes in a list of tree patterns
     def __init__(self, treePatterns):
         self.treePatterns = treePatterns

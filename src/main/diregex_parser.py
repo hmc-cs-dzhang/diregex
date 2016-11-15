@@ -7,17 +7,21 @@ tokens = diregex_lexer.tokens
 
 ########################### PARSERS ########################
 
-def p_treePattern_dir(p):
+def p_treePatternDir(p):
     '''treePattern : dirItem '''
-    p[0] = TreePattern_Dir(p[1])
+    p[0] = TreePatternDir(p[1])
 
-def p_treePattern_dir_with_children(p):
+def p_treePatternDirWithChildren(p):
     '''treePattern : dirItem SLASH treePattern'''
-    p[0] = TreePattern_Child(p[1], p[3])
+    p[0] = TreePatternChild(p[1], p[3])
 
-def p_treePattern_many(p):
+def p_treePatternDescendant(p):
+    '''treePattern : GT treePattern'''
+    p[0] = TreePatternDescendant(p[2])
+
+def p_treePatternMany(p):
     '''treePattern : LPAREN treePatternList RPAREN'''
-    p[0] = TreePattern_List(p[2])
+    p[0] = TreePatternList(p[2])
 
 def p_treePatternList(p):
     '''treePatternList : treePattern

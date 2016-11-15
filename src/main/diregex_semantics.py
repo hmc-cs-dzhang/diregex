@@ -4,6 +4,9 @@ import itertools
 from diregex_ir import *
 
 ## Use the visitor pattern, from Let's Build a Simple Interpreter
+## Visits each node of the abstarct syntax tree to build up a
+## candidate match, which is a dictionary mapping variable names to
+## the directories that they match.
 
 class NodeVisitor(object):
     def visit(self, node, currDir):
@@ -12,50 +15,65 @@ class NodeVisitor(object):
         return visitor(node, currDir)
 
     def generic_visit(self, node, currDir):
-        #print(node)
-        #print(currDir)
         raise Exception('No visit_{} method'.format(type(node).__name__))
+
 
 class Matcher(NodeVisitor):
 
-    def visit_TreePattern_Dir(self, node, path):
+    ''' Matches a TreePatternDir against a path.  Calls the visit method
+        on the directory name.  If the pattern was bound to a variable, adds
+        that variable to the list of matches.  Otherwise, just yields a match '''
+    def visit_TreePatternDir(self, node, path):
         # return node.dirItem matches with the current node
         for var, name in self.visit(node.dirItem.dirName, path):
             if var:
-                yield {var : os.path.join(path,name)}
+                yield {var : os.path.join(path, name)}
             else:
                 yield {}
 
-    def visit_TreePattern_Child(self, node, path):
-        # return node.dirItem matches with currNode and
-        # visit tree pattern with child node
+    ''' matches against the parent and the children.  Combines the match
+        dictionaries, and returns the result'''
+    def visit_TreePatternChild(self, node, path):
         parentMatches = self.visit(node.dirItem.dirName, path)
+
         for var, name in parentMatches:
             oneMatch = {}
-            if var:
-                oneMatch = {var : os.path.join(path,name)}
-
-            # visit children
             newPath = os.path.join(path, name)
+            if var:
+                oneMatch = {var : newPath}
+
             children = self.visit(node.treePattern, newPath)
 
             for child in children:
-                #if the node was named, it will be added to dict
+                # if the node was named, it will be added to child matches dictionary
                 child.update(oneMatch)
                 yield child
 
+    def visit_TreePatternDescendant(self, node, path):
+        for descPath, _, _ in os.walk(path):
+            for match in self.visit(node.treePattern, descPath):
+                yield match
+            '''newPattern = TreePatternChild(node.dirItem, node.treePattern)
 
-        # call visit for each of the children
+            parentMatches = self.visit(node.dirItem.dirName, descPath)
 
-    def visit_TreePattern_ListHelper(patterns, path, matches):
-        if patterns == []:
-            return
-        for pattern in patterns:
-            for match in self.visit(pattern, path, matches):
-                yield visit_TreePattern_ListHelper(patterns[1:], path, matches)
+            for var, name in parentMatches:
+                oneMatch = {}
+                newPath = ospath.join(descPath, name)
+                if var:
+                    oneMatch = {var : newPath}
 
+                children = self.visit(node.treePattern, newPath)
 
-    def visit_TreePattern_List(self, node, path):
+                for child in children:
+
+                    child.update(oneMatch)
+                    yield child
+'''
+    ''' matches against a list of tree patterns.  For each pattern in the list,
+        calls visit method to obtain a generator.  Then takes the product of all
+        those generators to yield a result'''
+    def visit_TreePatternList(self, node, path):
         generators = [self.visit(treePattern, path) for treePattern in node.treePatterns]
         for result in itertools.product(*generators):
             matches = {}
@@ -63,15 +81,20 @@ class Matcher(NodeVisitor):
                 matches.update(match)
             yield matches
 
+
+
     def visit_DirItem(self, node, currDir, matches):
         # call visit node.dirName to check that it matches the folder
         return self.visit(node.dirName, currDir)
 
+    ''' Scans the directory in path, looking for something that matches the node's
+        regex pattern.  Yields every match of the directory name and the node's
+        variable '''
     def visit_DirName(self, node, path):
-        dirs = os.scandir(path)
-        for d in dirs:
+        for d in os.scandir(path):
             match = re.fullmatch(node.regexPattern, d.name)
             if match:
-                # if the variable is not null, add it to the dictionary
                 yield node.var, match.string
+
+
 
