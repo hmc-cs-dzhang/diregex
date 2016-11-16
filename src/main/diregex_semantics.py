@@ -9,6 +9,11 @@ from diregex_ir import *
 ## the directories that they match.
 
 class NodeVisitor(object):
+
+    def __init__(self):
+        self.groupNames = {}
+        self.groupNumber = 0
+
     def visit(self, node, currDir):
         method_name = 'visit_' + type(node).__name__
         visitor = getattr(self, method_name, self.generic_visit)
@@ -24,8 +29,8 @@ class Matcher(NodeVisitor):
         on the directory name.  If the pattern was bound to a variable, adds
         that variable to the list of matches.  Otherwise, just yields a match '''
     def visit_TreePatternDir(self, node, path):
-        # return node.dirItem matches with the current node
-        for var, name in self.visit(node.dirItem.dirName, path):
+        # return node.dirName matches with the current node
+        for var, name in self.visit(node.dirName, path):
             if var:
                 yield {var : os.path.join(path, name)}
             else:
@@ -34,7 +39,7 @@ class Matcher(NodeVisitor):
     ''' matches against the parent and the children.  Combines the match
         dictionaries, and returns the result'''
     def visit_TreePatternChild(self, node, path):
-        parentMatches = self.visit(node.dirItem.dirName, path)
+        parentMatches = self.visit(node.dirName, path)
 
         for var, name in parentMatches:
             oneMatch = {}
@@ -49,27 +54,7 @@ class Matcher(NodeVisitor):
                 child.update(oneMatch)
                 yield child
 
-    def visit_TreePatternDescendant(self, node, path):
-        for descPath, _, _ in os.walk(path):
-            for match in self.visit(node.treePattern, descPath):
-                yield match
-            '''newPattern = TreePatternChild(node.dirItem, node.treePattern)
 
-            parentMatches = self.visit(node.dirItem.dirName, descPath)
-
-            for var, name in parentMatches:
-                oneMatch = {}
-                newPath = ospath.join(descPath, name)
-                if var:
-                    oneMatch = {var : newPath}
-
-                children = self.visit(node.treePattern, newPath)
-
-                for child in children:
-
-                    child.update(oneMatch)
-                    yield child
-'''
     ''' matches against a list of tree patterns.  For each pattern in the list,
         calls visit method to obtain a generator.  Then takes the product of all
         those generators to yield a result'''
@@ -81,11 +66,10 @@ class Matcher(NodeVisitor):
                 matches.update(match)
             yield matches
 
-
-
-    def visit_DirItem(self, node, currDir, matches):
-        # call visit node.dirName to check that it matches the folder
-        return self.visit(node.dirName, currDir)
+    def visit_TreePatternDescendant(self, node, path):
+        for descPath, _, _ in os.walk(path):
+            for match in self.visit(node.treePattern, descPath):
+                yield match
 
     ''' Scans the directory in path, looking for something that matches the node's
         regex pattern.  Yields every match of the directory name and the node's
@@ -97,4 +81,12 @@ class Matcher(NodeVisitor):
                 yield node.var, match.string
 
 
+def match(tree, path):
+    matcher = Matcher()
+    matches = matcher.visit(tree, path)
+    matchset = []
+    for match in matches:
+        print(match)
+        matchset.append(match)
 
+    return matchset

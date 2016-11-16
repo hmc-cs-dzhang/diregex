@@ -8,11 +8,11 @@ tokens = diregex_lexer.tokens
 ########################### PARSERS ########################
 
 def p_treePatternDir(p):
-    '''treePattern : dirItem '''
+    '''treePattern : dirName '''
     p[0] = TreePatternDir(p[1])
 
 def p_treePatternDirWithChildren(p):
-    '''treePattern : dirItem SLASH treePattern'''
+    '''treePattern : dirName SLASH treePattern'''
     p[0] = TreePatternChild(p[1], p[3])
 
 def p_treePatternDescendant(p):
@@ -30,15 +30,15 @@ def p_treePatternList(p):
         p[0] = [p[1]]
     else:
         p[0] = [p[1]] + p[3]
-
+'''
 def p_dirItem(p):
-    '''dirItem : dirName
-               | GT dirName'''
+    dirItem : dirName
+               | GT dirName
     if len(p) == 2:
         p[0] = DirItem(p[1])
     else:
         p[0] = DirItem(p[2], p[1])
-
+'''
 def p_dirName(p):
     '''dirName : REGEX
                | REGEX EQUALS VAR'''

@@ -9,7 +9,7 @@ os.chdir('../test/testdir')
 
 def match(diregex):
     ast = parse(diregex)
-
+    print(ast)
     matcher = Matcher()
     matches = {}
 

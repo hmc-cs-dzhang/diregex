@@ -7,50 +7,43 @@ from diregex_ir import *
 
 ''' test a simple directory '''
 def testDirItem():
-    ast = TreePatternDir(DirItem(DirName("hello")))
+    ast = TreePatternDir(DirName("hello"))
     bst = parse('"hello"')
     eq_(ast, bst)
 
 ''' test a directory bound to a variable '''
 def testNamedDirItem():
-    ast = TreePatternDir(DirItem(DirName("hello", "foo")))
+    ast = TreePatternDir(DirName("hello", "foo"))
     bst = parse('"hello"=foo')
     eq_(ast, bst)
 
 ''' a small path '''
 def testPath():
     ast = TreePatternChild(
-        DirItem(
-            DirName("foo")),
+        DirName("foo"),
         TreePatternDir(
-            DirItem(
-                DirName("bar*"))))
+            DirName("bar*")))
     bst = parse('"foo"/"bar*"')
     eq_(ast, bst)
 
 ''' a parent with two children '''
 def testSiblings():
     ast = TreePatternChild(
-        DirItem(
-            DirName("foo")),
+        DirName("foo"),
         TreePatternList(
             [TreePatternDir(
-                DirItem(
-                    DirName("bar1"))),
+                DirName("bar1")),
             TreePatternDir(
-                DirItem(
-                    DirName("bar2")))]))
+                DirName("bar2"))]))
     bst = parse('"foo"/("bar1", "bar2")')
     eq_(ast, bst)
 
 ''' descendent '''
 def testDescedent():
     ast = TreePatternChild(
-        DirItem(
-            DirName("foo")),
+        DirName("foo"),
         TreePatternDescendant(
             TreePatternDir(
-                DirItem(
-                    DirName("bar", "myvar")))))
+                DirName("bar", "myvar"))))
     bst = parse('"foo"/>"bar"=myvar')
     eq_(ast, bst)

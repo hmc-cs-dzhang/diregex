@@ -41,12 +41,12 @@ class TreePattern(Node):
     pass
 
 class TreePatternDir(TreePattern):
-    def __init__(self, dirItem):
-        self.dirItem = dirItem
+    def __init__(self, dirName):
+        self.dirName = dirName
 
 class TreePatternChild(TreePattern):
-    def __init__(self, dirItem, treePattern):
-        self.dirItem = dirItem
+    def __init__(self, dirName, treePattern):
+        self.dirName = dirName
         self.treePattern = treePattern
 
 ''' Like a TreePatternChild, but matches in current directory
@@ -59,13 +59,6 @@ class TreePatternList(TreePattern):
     # takes in a list of tree patterns
     def __init__(self, treePatterns):
         self.treePatterns = treePatterns
-
-class DirItem(Node):
-    # modifier could be GT which represents descedent
-    # TODO: future iterations specify exact generation or range of generations
-    def __init__(self, dirName, modifier=None):
-        self.dirName = dirName
-        self.modifier = modifier
 
 class DirName(Node):
     def __init__(self, regexPattern, var=None):
