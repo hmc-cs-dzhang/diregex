@@ -1,4 +1,5 @@
 import re
+from copy import deepcopy
 
 class RegexEnv(object):
 
@@ -6,18 +7,33 @@ class RegexEnv(object):
         self.groupdict = {} # contains the named groups
         self.groups = [] # contains all the groups, in order
 
-    def matchAll(self, patterns, strings):
+    def deepcopy(self):
+        other = RegexEnv()
+        other.groupdict = deepcopy(self.groupdict)
+        other.groups = deepcopy(self.groups)
+        return other
+
+    def matchAll(patterns, strings):
+        regexEnv = RegexEnv()
         for pattern, string in zip(patterns, strings):
-            self.match(pattern, string)
+            regexEnv = regexEnv.match(pattern, string)
+        return regexEnv
 
     def match(self, pattern, string):
         newPattern = self.replaceBackreferences(pattern)
-        m = re.match(newPattern, string)
+        print(newPattern)
+        # fullmatch only matches if the entire string is match
+        # Add option for not full match?
+        m = re.fullmatch(newPattern, string)
         if m:
-            self.groups += list(m.groups())
-            self.groupdict.update(m.groupdict())
+            newRegexEnv = self.deepcopy()
 
-        return m
+            newRegexEnv.groups += list(m.groups())
+            newRegexEnv.groupdict.update(m.groupdict())
+
+            return newRegexEnv
+        # return nothing (?)
+
 
     '''
     @return     string
