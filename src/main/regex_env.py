@@ -21,7 +21,7 @@ class RegexEnv(object):
 
     def match(self, pattern, string):
         newPattern = self.replaceBackreferences(pattern)
-        print(newPattern)
+
         # fullmatch only matches if the entire string is match
         # Add option for not full match?
         m = re.fullmatch(newPattern, string)
