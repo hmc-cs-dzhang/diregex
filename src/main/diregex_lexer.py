@@ -2,24 +2,24 @@ import ply.lex as lex
 
 tokens = ['SLASH',
           'EQUALS',
-          'VAR',
-          'REGEX',
+          'COMMA',
           'LPAREN',
           'RPAREN',
-          'GT',
-          'COMMA']
+          'DOUBLE_STAR',
+          'IDENT',
+          'GLOB']
 
 #todo: make t_error
-#create precedence
+
 t_ignore = ' \t'
 t_SLASH = r'\/'
 t_EQUALS = r'='
-t_GT = r'>'
 t_COMMA = r','
 t_LPAREN = r'\('
 t_RPAREN = r'\)'
-t_REGEX = r'\"[a-zA-Z0-9_\*\[\]\-\.\\\(\)]+\"'
-t_VAR = r'[a-zA-Z_][a-zA-Z0-9_]*'
+t_DOUBLE_STAR = r'\*\*'
+t_IDENT = r'[a-zA-Z_][a-zA-Z0-9_]*(?=(/|,|\s|$|\)))'
+t_GLOB = r'([\w?\<\>\[\]\-\\.]|\*(?!\*))+'
 
 # Error handling rule from PLY manual
 def t_error(t):
@@ -45,8 +45,15 @@ def lexer(st):
 def test():
 
 
-    lex.input("_=mydir//_/(bar1, bar2)")
+    lex.input("*=mydir/**/file/_a?[1-5]*=hi/yo=hi2")
     while True:
         tok = lex.token()
         if not tok: break
         print(tok)
+
+def testtoken():
+    import re
+    m = re.search(t_IDENT, "yo=hi2")
+    print(m)
+
+test()
