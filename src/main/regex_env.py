@@ -15,12 +15,17 @@ class RegexEnv(object):
 
     def matchAll(patterns, strings):
         regexEnv = RegexEnv()
+
         for pattern, string in zip(patterns, strings):
             regexEnv = regexEnv.match(pattern, string)
+
         return regexEnv
 
     def match(self, pattern, string):
-        newPattern = self.replaceBackreferences(pattern)
+        # translate from globbing to python regex
+        regexPattern = RegexEnv.translate(pattern)
+
+        newPattern = self.replaceBackreferences(regexPattern)
 
         # fullmatch only matches if the entire string is match
         # Add option for not full match?
@@ -34,6 +39,55 @@ class RegexEnv(object):
             return newRegexEnv
         # return nothing (?)
 
+    def translate(pat):
+        """
+        Translate a shell PATTERN to a regular expression. There is no way to
+        quote meta-characters. Adapted from Python3's fnmatch.translate().
+        Allows capture groups specified by <...>
+
+        @param      pat   The pattern
+
+        @return     the regex pattern
+        """
+
+        i, n = 0, len(pat)
+        res = ''
+        while i < n:
+            c = pat[i]
+            i = i+1
+            if c == '*':
+                res = res + '.*'
+            elif c == '?':
+                res = res + '.'
+            elif c == '<':
+                res = res + '('
+            elif c == '>':
+                res = res + ')'
+            elif c == '\\':
+                res = res + '\\'
+            elif c == '[':
+                j = i
+                if j < n and pat[j] == '!':
+                    j = j+1
+                if j < n and pat[j] == ']':
+                    j = j+1
+                while j < n and pat[j] != ']':
+                    j = j+1
+                if j >= n:
+                    res = res + '\\[' # open didn't match close bracket
+                else:
+                    stuff = pat[i:j].replace('\\','\\\\')
+                    i = j+1
+                    if stuff[0] == '!':
+                        stuff = '^' + stuff[1:]
+                    elif stuff[0] == '^':   # what is this for? just escaping ^?
+                        stuff = '\\' + stuff
+                    res = '%s[%s]' % (res, stuff)
+            else:
+                res = res + re.escape(c)
+        return res + '\Z(?ms)'
+
+
 
     '''
     @return     string
@@ -42,11 +96,12 @@ class RegexEnv(object):
     '''
     def replaceBackreferences(self, p):
         numberedBackreference = r"(\\[1-9][0-9]?)"
-        namedBackreference = r"\(\?P\=([A-z_][A-z0-9_]*)\)"
 
-        backreferencePattern = "{}|{}".format(numberedBackreference, namedBackreference)
+        # no mechanism for named backreferences with globbing yet
+        #namedBackreference = r"\(\?P\=([A-z_][A-z0-9_]*)\)"
+        #backreferencePattern = "{}|{}".format(numberedBackreference, namedBackreference)
 
-        newPattern = re.sub(backreferencePattern, self.replFunc, p)
+        newPattern = re.sub(numberedBackreference, self.replFunc, p)
 
         return newPattern
 
@@ -72,6 +127,8 @@ class RegexEnv(object):
                 return self.groups[number-1]
             else:
                 return "\\" + str(number - len(self.groups))
+        # No way to make named backreferences with globbing, so this code is useless
+        '''
         else:
             rawName = RegexEnv.namedBackreference(matchobj)
             name = RegexEnv.extractName(rawName)
@@ -79,8 +136,9 @@ class RegexEnv(object):
                 return self.groupdict[name]
             else:
                 return rawName      # don't replace it, return the original pattern
-
+        '''
     ''' If matchobj matches a numbered backreference \n, extracts the number '''
+
     def numberedBackreference(matchobj):
         n = matchobj.group(0).strip(r"\\")
         if n.isdigit():
@@ -95,9 +153,6 @@ class RegexEnv(object):
     ''' extracts name from (?P=name) '''
     def extractName(name):
         return name[4:-1]
-
-
-
 
 
 
