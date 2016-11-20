@@ -121,9 +121,22 @@ def match(tree, path):
     matcher = Matcher()
     regexEnv = RegexEnv()
     matches = matcher.visit(tree, path, regexEnv)
-    matchList = []
+
     for varEnv, _ in matches:
+        yield varEnv
+
+def allMatches(tree, path):
+
+    matchList = []
+    for varEnv in match(tree, path):
         baseVarEnv = {v: os.path.basename(p) for v, p in varEnv.items()}
         matchList.append(baseVarEnv)
-
+        '''
+        for var in varEnv:
+            path = varEnv[var]
+            if var in varSets:
+                varSets[var] = {path}
+            else:
+                varSets[var].add(path)
+        '''
     return matchList

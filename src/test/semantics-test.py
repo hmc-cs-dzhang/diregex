@@ -4,7 +4,7 @@ from nose.tools import eq_
 sys.path.append("../main")
 
 from diregex_ir import *
-from diregex_semantics import match
+from diregex_semantics import allMatches
 
 # copied from diregex_semantics.py.
 # Add imports and change directory
@@ -29,11 +29,11 @@ def testTreeList():
         [TreePatternChild(
             DirName(r"child1"),
             TreePatternDir(
-                DirName(r"file1[a-b].*", "var2"))),
+                DirName(r"file1[a-b]*", "var2"))),
         TreePatternDir(
-            DirName(r"[a-z]*2", "var3"))]))
+            DirName(r"*2", "var3"))]))
 
-    matchList = match(treeList, testpath)
+    matchList = allMatches(treeList, testpath)
 
     expectedMatches = [{'var3': 'child2', 'var2': 'file1b.txt'},
         {'var3': 'child2', 'var2': 'file1a.txt'}]
@@ -49,7 +49,7 @@ def testTreeChildren():
             TreePatternDir(
                 DirName(r"[A-z0-9\.]*", 'f'))))
 
-    matches = match(simple, testpath + "/testdir")
+    matches = allMatches(simple, testpath + "/testdir")
     expectedMatches = [{'p': 'parent', 'f': 'file1b.txt'},
         {'p': 'parent','f': 'file1a.txt'}]
     eq_(matches, expectedMatches)
@@ -58,22 +58,22 @@ def testTreeChildren():
 def testTreeBackreferencing():
     tree = TreePatternDescendant(TreePatternList([
         TreePatternDir(
-            DirName(r"([a-z0-9]*)a\.txt", "f1")),
+            DirName(r"<*>a.txt", "f1")),
         TreePatternDir(
-            DirName(r"\1b\.txt", "f2"))]))
+            DirName(r"\1b.txt", "f2"))]))
 
-    matches = match(tree, testpath + "/testdir")
+    matches = allMatches(tree, testpath + "/testdir")
     expectedMatches = [{'f1': 'file1a.txt', 'f2': 'file1b.txt'}]
     eq_(matches, expectedMatches)
 
 ''' test backreferencing with parents/children '''
 def testTreeBackreferencing2():
     tree = TreePatternChild(
-        DirName(r"([a-z0-9]*)", "f1"),
+        DirName(r"<*>", "f1"),
         TreePatternDir(
-            DirName(r"\1\.cpp", "f2")))
+            DirName(r"\1.cpp", "f2")))
 
-    matches = match(tree, testpath + "/testdir2")
+    matches = allMatches(tree, testpath + "/testdir2")
     expectedMatches = [{'f1': 'foo', 'f2': 'foo.cpp'}]
     eq_(matches, expectedMatches)
 
