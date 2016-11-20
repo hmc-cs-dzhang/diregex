@@ -3,6 +3,25 @@ import diregex_lexer
 from diregex_ir import *
 tokens = diregex_lexer.tokens
 
+
+
+''' My current grammar (subject to change)
+<program> : <tree-pattern>
+
+<tree-pattern> : <dir-name>
+               | <dir-name> SLASH <tree-pattern>
+               | DOUBLE_STAR SLASH <tree-pattern>
+               | LPAREN <tree-pattern-list> RPAREN
+
+<tree-pattern-list> : | <tree-pattern>
+                      | <tree-pattern> COMMA <tree-pattern-list>
+
+<dir-name> : GLOB
+           | IDENT
+           | GLOB EQUALS IDENT
+'''
+
+
 # Parses the grammar into the abstract syntax, represented in ir.py
 
 ########################### PARSERS ########################
@@ -16,8 +35,8 @@ def p_treePatternDirWithChildren(p):
     p[0] = TreePatternChild(p[1], p[3])
 
 def p_treePatternDescendant(p):
-    '''treePattern : GT treePattern'''
-    p[0] = TreePatternDescendant(p[2])
+    '''treePattern : DOUBLE_STAR SLASH treePattern'''
+    p[0] = TreePatternDescendant(p[3])
 
 def p_treePatternMany(p):
     '''treePattern : LPAREN treePatternList RPAREN'''
@@ -30,22 +49,15 @@ def p_treePatternList(p):
         p[0] = [p[1]]
     else:
         p[0] = [p[1]] + p[3]
-'''
-def p_dirItem(p):
-    dirItem : dirName
-               | GT dirName
-    if len(p) == 2:
-        p[0] = DirItem(p[1])
-    else:
-        p[0] = DirItem(p[2], p[1])
-'''
+
 def p_dirName(p):
-    '''dirName : REGEX
-               | REGEX EQUALS VAR'''
+    '''dirName : GLOB
+               | IDENT
+               | GLOB EQUALS IDENT'''
     if len(p) == 2:
-        p[0] = DirName(p[1].strip("\""))
+        p[0] = DirName(p[1])
     else:
-        p[0] = DirName(p[1].strip("\""), p[3])
+        p[0] = DirName(p[1], p[3])
 
 def p_error(p):
     print("cannot parse " + repr(p))
