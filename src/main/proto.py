@@ -3,18 +3,21 @@ from diregex_semantics import Matcher
 from diregex_parser import parse
 import diregex_lexer
 from diregex_ir import *
+from regex_env import RegexEnv
 
 print(os.getcwd())
 os.chdir('../test/testdir')
 
 def match(diregex):
     ast = parse(diregex)
-    print(ast)
+    #print(ast)
     matcher = Matcher()
-    matches = {}
+    emptyEnv = RegexEnv()
 
-    for match in matcher.visit(ast, os.getcwd()):
-        print(match)
+    for match, regexEnv in matcher.visit(ast, os.getcwd(), emptyEnv):
+        shortenedMatch = {key:os.path.basename(val) for key, val in match.items()}
+        print(shortenedMatch)
+        #print(regexEnv.groups)
 
 
 print("----Example 1------")
@@ -38,4 +41,9 @@ match('"[a-z]*"/(>"[a-z0-9\.]*"=var1, "child[a-z0-9]*"=var2)')
 # should return nothing
 print("----Example 7------")
 match('"butt"')
+
+os.chdir('../testdir2')
+
+print("----Example 8------")
+match(r'"([a-z]*)"=top/"\1\.cpp"=bottom')
 

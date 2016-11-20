@@ -7,22 +7,20 @@
 ''' My current grammar (subject to change)
 <program> : <tree-pattern>
 
+
 <tree-pattern> : <dir-name>
                | <dir-name> SLASH <tree-pattern>
                | LPAREN <tree-pattern-list> RPAREN
 
+<tree-pattern-list> : | <tree-pattern>
+                      | <tree-pattern> COMMA <tree-pattern-list>
 
 
 <dir-name> : <regex-pattern>
            | <regex-pattern> EQUALS <var>
 '''
-'''
-<tree-pattern-list> : | <tree-pattern>
-                      | <tree-pattern> COMMA <tree-pattern-list>
-(ignore)
-<dir-item> : <dir-name>
-           | GT <dir-name>
-'''
+
+
 # abstact class for a node of the AST
 class Node(object):
 
