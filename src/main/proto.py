@@ -21,29 +21,29 @@ def match(diregex):
 
 
 print("----Example 1------")
-match('"parent"=p/"child[1-2]"')
+match('parent=p/child[1-2]')
 
 print("----Example 2------")
-match('"[a-z]*"=foo/"[a-z0-9]*"=bar')
+match('**/*[0-9]=foo/*=bar')
 
 print("----Example 3------")
-match('"parent"=foo/"child[1-2]*"=bar/"[a-z0-9.]*"')
+match('parent=foo/child[1-2]*=bar/*')
 
 print("----Example 4------")
-match('"parent"/("ch[a-z0-9]*"=c1, "[a-z0-9]*"=c2)')
+match('parent/(ch*=c1, *[0-9]=c2)')
 
 print("----Example 5------")
-match('"parent"=p/>"file[a-z0-9]*.txt"=q')
+match('parent=p/**/file?[a-z0-9].txt=q')
 
 print("----Example 6------")
-match('"[a-z]*"/(>"[a-z0-9\.]*"=var1, "child[a-z0-9]*"=var2)')
+match('*[!0-9]/(**/*=var1, child[a-z0-9]*=var2)')
 
 # should return nothing
 print("----Example 7------")
-match('"butt"')
+match('butt')
 
 os.chdir('../testdir2')
 
 print("----Example 8------")
-match(r'"([a-z]*)"=top/"\1\.cpp"=bottom')
+match(r'<*>=top/\1.cpp=bottom')
 

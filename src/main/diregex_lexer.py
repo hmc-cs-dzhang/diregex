@@ -19,7 +19,7 @@ t_LPAREN = r'\('
 t_RPAREN = r'\)'
 t_DOUBLE_STAR = r'\*\*'
 t_IDENT = r'[a-zA-Z_][a-zA-Z0-9_]*(?=(/|,|\s|$|\)))'
-t_GLOB = r'([\w?\<\>\[\]\-\\.]|\*(?!\*))+'
+t_GLOB = r'([\w?\<\>\[\]\-\\.!]|\*(?!\*))+'
 
 # Error handling rule from PLY manual
 def t_error(t):
@@ -56,4 +56,3 @@ def testtoken():
     m = re.search(t_IDENT, "yo=hi2")
     print(m)
 
-test()
