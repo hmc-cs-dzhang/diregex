@@ -1,0 +1,22 @@
+## List of things to do for my DSL
+
+####  Priorities (in no particular order)
+1. Don't print duplicates
+    * Hash dictionaries, to make sure no duplicates or
+    * Stop looking if found a match, and descendants have no named variables
+1. Add readable option (truncate pathnames)
+    * Added it to the semantics, now I need to add to language
+1. Optimize searcher so that it's not searching multiple things
+1. Indicate if no matches
+1. If user didn't specify a variable, should it return the top node?
+
+
+
+#### Deprioritized
+1. Specify number of descendants
+1. Name variables that you can use in an expression
+3. Add interactive ability (to look for next match, terminate, etc)
+4. Semantics tests, which involves equating lists of dictionaries
+    * In tests, don't check order of results
+5. Make regex option, default to non-regex
+1. Add isFile token
