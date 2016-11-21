@@ -7,6 +7,9 @@ class RegexEnv(object):
         self.groupdict = {} # contains the named groups
         self.groups = [] # contains all the groups, in order
 
+    def __eq__(self, other):
+        return self.groups == other.groups
+
     def deepcopy(self):
         other = RegexEnv()
         other.groupdict = deepcopy(self.groupdict)
