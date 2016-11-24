@@ -122,8 +122,19 @@ def match(tree, path):
     regexEnv = RegexEnv()
     matches = matcher.visit(tree, path, regexEnv)
 
+    varEnvs = []
+
     for varEnv, _ in matches:
-        yield varEnv
+        # don't print duplicates
+        if newEnv(varEnv, varEnvs):
+            varEnvs += [varEnv]
+            yield varEnv
+
+def newEnv(varEnv, varEnvs):
+    for otherVarEnv in varEnvs:
+        if varEnv == otherVarEnv:
+            return False
+    return True
 
 def allMatches(tree, path):
 

@@ -2,7 +2,6 @@
 
 ####  Priorities (in no particular order)
 1. Don't print duplicates
-    * Hash dictionaries, to make sure no duplicates or
     * Stop looking if found a match, and descendants have no named variables
 1. Add readable option (truncate pathnames)
     * Added it to the semantics, now I need to add to language
@@ -20,3 +19,5 @@
     * In tests, don't check order of results
 5. Make regex option, default to non-regex
 1. Add isFile token
+2. Alternate syntax for reorganizing files
+3. Be able to deal with filenames with many words/symbols

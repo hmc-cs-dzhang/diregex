@@ -34,7 +34,7 @@ def newEnv(varEnv, regexEnv, envs):
 def exec(varEnv, regexEnv, command):
 
     replacedVars = re.sub(r"\{\w+\}", functools.partial(replVars, varEnv), command)
-    replacedRegex = re.sub(r"\\[1-9]", functools.partial(replRegex, regexEnv), replacedVars)
+    replacedRegex = re.sub(r"\\[1-9A-Za-z_]+", functools.partial(replRegex, regexEnv), replacedVars)
     return replacedRegex
 
 def replVars(varEnv, matchobj):
@@ -56,14 +56,11 @@ def replRegex(regexEnv, matchobj):
         else:
             raise Exception("numbered pattern is out of bounds")
     else:
-        raise Exception("named patterns are not supported")
+        return regexEnv.groupdict[newvar]
 
 '''
 diregex = 'parent/child[1-2]/*=c'
 command = r"subl {c}"
 test(diregex, command)
 '''
-diregex = r'(src/<*>.cpp=srcfile, test/\1_test.cpp=testfile)'
-command = r'''mkdir \1_dir
-mv {srcfile} {testfile} \1_dir'''
-test(diregex, command)
+

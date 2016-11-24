@@ -40,6 +40,17 @@ def testTreeList():
 
     eq_(matchList, expectedMatches)
 
+def testNoDuplicates():
+    treeList=  TreePatternDescendant(
+        TreePatternChild(
+            DirName("parent", "var"),
+            TreePatternDir(
+                DirName(r'*'))))
+    matchList = allMatches(treeList, testpath)
+
+    expectedMatches = [{'var': 'parent'}]
+    eq_(matchList, expectedMatches)
+
 ''' parent=p/child1/file1[a-b]=f'''
 def testTreeChildren():
     simple = TreePatternChild(
