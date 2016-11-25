@@ -37,7 +37,7 @@ class TreePatternChild(TreePattern):
 
 ''' Like a TreePatternChild, but matches in current directory
     or any descendant'''
-class TreePatternDescendant(TreePattern):
+class TreePatternDesc(TreePattern):
     def __init__(self, treePattern):
         self.treePattern = treePattern
 

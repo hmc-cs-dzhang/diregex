@@ -25,7 +25,7 @@ testpath = os.getcwd()
 
 ''' child1/file1[a-b].*=var2/[a-z]*2=var3 '''
 def testTreeList():
-    treeList = TreePatternDescendant(TreePatternList(
+    treeList = TreePatternDesc(TreePatternList(
         [TreePatternChild(
             DirGlob(r"child1"),
             TreePatternDir(
@@ -41,7 +41,7 @@ def testTreeList():
     eq_(matchList, expectedMatches)
 
 def testNoDuplicates():
-    treeList=  TreePatternDescendant(
+    treeList=  TreePatternDesc(
         TreePatternChild(
             DirGlobWithVar("var", "parent"),
             TreePatternDir(
@@ -67,7 +67,7 @@ def testTreeChildren():
 
 ''' test backreferencing between patterns with lists '''
 def testTreeBackreferencing():
-    tree = TreePatternDescendant(TreePatternList([
+    tree = TreePatternDesc(TreePatternList([
         TreePatternDir(
             DirGlobWithVar("f1", r"<*>a.txt")),
         TreePatternDir(

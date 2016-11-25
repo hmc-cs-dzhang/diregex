@@ -52,7 +52,7 @@ def testSiblings2():
 def testDescedent():
     ast = TreePatternChild(
         DirGlob("foo"),
-        TreePatternDescendant(
+        TreePatternDesc(
             TreePatternDir(
                 DirGlobWithVar("myvar", "bar"))))
     bst = parse('foo/**/myvar=bar')

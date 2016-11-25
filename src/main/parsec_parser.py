@@ -80,10 +80,10 @@ def treePatternChild():
     return TreePatternChild(parent, children)
 
 @generate
-def treePatternDescendant():
+def treePatternDesc():
     ''' parse a tree pattern of the form ** '''
     child = yield stars >> slash >> treePattern
-    return TreePatternDescendant(child)
+    return TreePatternDesc(child)
 
 @generate
 def treePatternVar():
@@ -94,7 +94,7 @@ def treePatternVar():
 @generate
 def treePattern():
     ''' parse an arbitrary tree pattern '''
-    tpat = yield treePatternDescendant \
+    tpat = yield treePatternDesc \
                 ^ treePatternChild \
                 ^ treePatternList \
                 ^ treePatternDir \

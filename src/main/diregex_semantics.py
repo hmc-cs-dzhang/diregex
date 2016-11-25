@@ -95,7 +95,7 @@ class Matcher(NodeVisitor):
                     yield varEnv2, regexEnv2
 
 
-    def visit_TreePatternDescendant(self, node, path, regexEnv):
+    def visit_TreePatternDesc(self, node, path, regexEnv):
 
         for descPath, _, _ in os.walk(path):
             for varEnv, newRegexEnv in self.visit(node.treePattern, descPath, regexEnv):
