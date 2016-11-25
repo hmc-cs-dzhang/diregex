@@ -86,12 +86,19 @@ def treePatternDescendant():
     return TreePatternDescendant(child)
 
 @generate
+def treePatternVar():
+    ''' parse a variable of the form {var} '''
+    var = yield lbrace >> ident << rbrace
+    return TreePatternVar(var)
+
+@generate
 def treePattern():
     ''' parse an arbitrary tree pattern '''
     tpat = yield treePatternDescendant \
                 ^ treePatternChild \
                 ^ treePatternList \
-                ^ treePatternDir
+                ^ treePatternDir \
+                ^ treePatternVar
     return tpat
 
 program = whitespace >> treePattern << eof

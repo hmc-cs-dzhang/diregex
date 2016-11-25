@@ -46,6 +46,10 @@ class TreePatternList(TreePattern):
     def __init__(self, treePatterns):
         self.treePatterns = treePatterns
 
+class TreePatternVar(TreePattern):
+    def __init__(self, var):
+        self.var = var
+
 class DirItem(Node):
     pass
 

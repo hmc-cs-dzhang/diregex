@@ -68,3 +68,10 @@ def testPattern():
                 DirGlobWithVar("hi", "child"))))
     bst = parse('foo/hey=test<pat=d*[?][1-2]>*a/hi=child')
     eq_(ast, bst)
+
+def testVar():
+    ast = TreePatternChild(
+        DirGlob("foo"),
+        TreePatternVar("var"))
+    bst = parse(r'foo/{var}')
+    eq_(ast, bst)
