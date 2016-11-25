@@ -10,7 +10,11 @@ class Node(object):
 
     def __eq__(self, other):
         return self.__dict__ == other.__dict__
-
+    '''
+    def __repr__(self):
+        import pprint
+        return pprint.pprint(self)
+    '''
     def __repr__(self):
         st = ""
         for key in self.__dict__:

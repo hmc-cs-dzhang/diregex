@@ -5,6 +5,10 @@ tokens = ['SLASH',
           'COMMA',
           'LPAREN',
           'RPAREN',
+          'LBRACE',
+          'RBRACE',
+          'GT',
+          'LT',
           'DOUBLE_STAR',
           'IDENT',
           'GLOB']
@@ -17,9 +21,22 @@ t_EQUALS = r'='
 t_COMMA = r','
 t_LPAREN = r'\('
 t_RPAREN = r'\)'
+t_LBRACE = r'\{'
+t_RBRACE = r'\}'
+t_GT     = r'>'
+t_LT     = r'<'
 t_DOUBLE_STAR = r'\*\*'
-t_IDENT = r'[a-zA-Z_][a-zA-Z0-9_]*(?=(/|,|\s|$|\)))'
-t_GLOB = r'([\w?\<\>\[\]\-\\.!\:]|\*(?!\*))+'
+
+def t_IDENT(t):
+    r'[a-zA-Z_][a-zA-Z0-9_]*'
+    return t
+
+#identChars = r'[a-zA-Z_][a-zA-Z0-9_]*'
+#identEnds = r'(?=(/|,|\s|$|\)))' # for some reason [/,\s$\)] doesn't work
+#t_IDENT = identChars# + identEnds
+
+
+t_GLOBIDENT = r'([\w?\<\>\[\]\-\\.!\:]|\*(?!\*))+'
 
 # Error handling rule from PLY manual
 def t_error(t):

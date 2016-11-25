@@ -1,8 +1,8 @@
 import sys
 from nose.tools import eq_
 sys.path.append("../main")
-
-from diregex_parser import parse
+from pprint import pprint
+from parsec_parser import parse
 from diregex_ir import *
 
 ''' test a simple directory '''
@@ -26,8 +26,17 @@ def testPath():
     bst = parse('foo/bar*')
     eq_(ast, bst)
 
+def testSiblings1():
+    ast = TreePatternList([
+        TreePatternDir(
+            DirName("sib1")),
+        TreePatternDir(
+            DirName("sib2"))])
+    bst = parse('(sib1, sib2)')
+    eq_(ast, bst)
+
 ''' a parent with two children '''
-def testSiblings():
+def testSiblings2():
     ast = TreePatternChild(
         DirName("foo"),
         TreePatternList(
@@ -36,6 +45,7 @@ def testSiblings():
             TreePatternDir(
                 DirName("bar2"))]))
     bst = parse('foo/(bar1, bar2)')
+
     eq_(ast, bst)
 
 ''' descendent '''

@@ -4,6 +4,8 @@ sys.path.append("../main")
 
 from diregex_lexer import lexer
 
+# reserved symbols: < > ( ) { } / , = ** :
+
 def testGlob():
     toks = lexer("*/")
     eq_(toks, [('GLOB', '*'),
@@ -20,10 +22,12 @@ def testDirName():
     eq_(toks, [('IDENT', "hello")])
 
 def testLinearPath():
-    toks = lexer("parent/child")
-    eq_(toks, [('IDENT', "parent"),
+    toks = lexer(r"p<pat:*>arent/{child}")
+    eq_(toks, [('GLOB', "p<pat:*>arent"),
                ('SLASH', "/"),
-               ('IDENT', "child")])
+               ('LBRACE', "{"),
+               ('GLOB', "child"),
+               ('RBRACE', "}")])
 
 def testLinearPath2():
     toks = lexer("*=mydir/**/file/_a?[1-5]*=hi/yo=hi2")

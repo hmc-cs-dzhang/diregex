@@ -19,12 +19,13 @@ tokens = diregex_lexer.tokens
 <dir-name> : GLOB
            | IDENT
            | GLOB EQUALS IDENT
+           | LBRACE IDENT RBRACE
 '''
 
 
 # Parses the grammar into the abstract syntax, represented in ir.py
 
-########################### PARSERS ########################
+########################### PARSER ########################
 
 def p_treePatternDir(p):
     '''treePattern : dirName '''
@@ -53,7 +54,8 @@ def p_treePatternList(p):
 def p_dirName(p):
     '''dirName : GLOB
                | IDENT
-               | GLOB EQUALS IDENT'''
+               | GLOB EQUALS IDENT
+    '''
     if len(p) == 2:
         p[0] = DirName(p[1])
     else:
