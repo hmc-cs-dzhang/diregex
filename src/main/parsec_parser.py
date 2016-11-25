@@ -23,19 +23,23 @@ whitespace = regex(r'\s*', re.MULTILINE)
 
 lexeme = lambda p: p << whitespace
 
-lbrace = lexeme(string('{'))
-rbrace = lexeme(string('}'))
-lparen = lexeme(string('('))
-rparen = lexeme(string(')'))
-equals = lexeme(string('='))
-slash = lexeme(string('/'))
-gt = lexeme(string('>'))
-lt = lexeme(string('<'))
-comma = lexeme(string(','))
-ident = lexeme(regex(r'[A-Za-z_][A-Za-z_0-9]*'))
-glob = lexeme(regex(r'[A-Za-z0-9_\*\?\[\]\-]+'))
-stars = lexeme(string('**'))
-identchars = r'A-Za-z_0-9'
+lbrace  = lexeme(string('{'))
+rbrace  = lexeme(string('}'))
+lparen  = lexeme(string('('))
+rparen  = lexeme(string(')'))
+equals  = lexeme(string('='))
+slash   = lexeme(string('/'))
+gt      = lexeme(string('>'))
+lt      = lexeme(string('<'))
+comma   = lexeme(string(','))
+stars   = lexeme(string('**'))
+eof = lexeme(regex(r'$'))
+
+globexpr  = r'[A-Za-z0-9_\*\?\[\]\-]+'
+identexpr = r'[A-Za-z_][A-Za-z_0-9]+'
+
+ident  = lexeme(regex(identexpr))
+glob   = lexeme(regex("({0}|<{1}={0}>)+".format(globexpr, identexpr)))
 
 @generate
 def dirGlob():
@@ -90,14 +94,7 @@ def treePattern():
                 ^ treePatternDir
     return tpat
 
-parser = whitespace >> treePattern
-'''
-result = parser.parse('a=hello/(y*abc=goodbye, list)')
-print(type(parser))
-print(result)
-'''
+program = whitespace >> treePattern << eof
+
 def parse(st):
-    return parser.parse(st)
-
-
-print(parse('(sib1, sib2)'))
+    return program.parse(st)

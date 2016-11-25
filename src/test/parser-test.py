@@ -57,3 +57,14 @@ def testDescedent():
                 DirName("bar", "myvar"))))
     bst = parse('foo/**/bar=myvar')
     eq_(ast, bst)
+
+''' pattern '''
+def testPattern():
+    ast = TreePatternChild(
+        DirName("foo"),
+        TreePatternChild(
+            DirName('test<pat=d*[?][1-2]>*a', "hey"),
+            TreePatternDir(
+                DirName("child", "hi"))))
+    bst = parse('foo/test<pat=d*[?][1-2]>*a=hey/child=hi')
+    eq_(ast, bst)
