@@ -7,43 +7,43 @@ from diregex_ir import *
 
 ''' test a simple directory '''
 def testDirItem():
-    ast = TreePatternDir(DirName("hello"))
+    ast = TreePatternDir(DirGlob("hello"))
     bst = parse('hello')
     eq_(ast, bst)
 
 ''' test a directory bound to a variable '''
 def testNamedDirItem():
-    ast = TreePatternDir(DirName("hello", "foo"))
-    bst = parse('hello=foo')
+    ast = TreePatternDir(DirGlobWithVar("foo", "hello"))
+    bst = parse('foo=hello')
     eq_(ast, bst)
 
 ''' a small path '''
 def testPath():
     ast = TreePatternChild(
-        DirName("foo"),
+        DirGlob("foo"),
         TreePatternDir(
-            DirName("bar*")))
+            DirGlob("bar*")))
     bst = parse('foo/bar*')
     eq_(ast, bst)
 
 def testSiblings1():
     ast = TreePatternList([
         TreePatternDir(
-            DirName("sib1")),
+            DirGlob("sib1")),
         TreePatternDir(
-            DirName("sib2"))])
+            DirGlob("sib2"))])
     bst = parse('(sib1, sib2)')
     eq_(ast, bst)
 
 ''' a parent with two children '''
 def testSiblings2():
     ast = TreePatternChild(
-        DirName("foo"),
+        DirGlob("foo"),
         TreePatternList(
             [TreePatternDir(
-                DirName("bar1")),
+                DirGlob("bar1")),
             TreePatternDir(
-                DirName("bar2"))]))
+                DirGlob("bar2"))]))
     bst = parse('foo/(bar1, bar2)')
 
     eq_(ast, bst)
@@ -51,20 +51,20 @@ def testSiblings2():
 ''' descendent '''
 def testDescedent():
     ast = TreePatternChild(
-        DirName("foo"),
+        DirGlob("foo"),
         TreePatternDescendant(
             TreePatternDir(
-                DirName("bar", "myvar"))))
-    bst = parse('foo/**/bar=myvar')
+                DirGlobWithVar("myvar", "bar"))))
+    bst = parse('foo/**/myvar=bar')
     eq_(ast, bst)
 
 ''' pattern '''
 def testPattern():
     ast = TreePatternChild(
-        DirName("foo"),
+        DirGlob("foo"),
         TreePatternChild(
-            DirName('test<pat=d*[?][1-2]>*a', "hey"),
+            DirGlobWithVar("hey", 'test<pat=d*[?][1-2]>*a'),
             TreePatternDir(
-                DirName("child", "hi"))))
-    bst = parse('foo/test<pat=d*[?][1-2]>*a=hey/child=hi')
+                DirGlobWithVar("hi", "child"))))
+    bst = parse('foo/hey=test<pat=d*[?][1-2]>*a/hi=child')
     eq_(ast, bst)

@@ -27,11 +27,11 @@ testpath = os.getcwd()
 def testTreeList():
     treeList = TreePatternDescendant(TreePatternList(
         [TreePatternChild(
-            DirName(r"child1"),
+            DirGlob(r"child1"),
             TreePatternDir(
-                DirName(r"file1[a-b]*", "var2"))),
+                DirGlobWithVar("var2", r"file1[a-b]*"))),
         TreePatternDir(
-            DirName(r"*2", "var3"))]))
+            DirGlobWithVar("var3", r"*2"))]))
 
     matchList = allMatches(treeList, testpath)
 
@@ -43,9 +43,9 @@ def testTreeList():
 def testNoDuplicates():
     treeList=  TreePatternDescendant(
         TreePatternChild(
-            DirName("parent", "var"),
+            DirGlobWithVar("var", "parent"),
             TreePatternDir(
-                DirName(r'*'))))
+                DirGlob(r'*'))))
     matchList = allMatches(treeList, testpath)
 
     expectedMatches = [{'var': 'parent'}]
@@ -54,11 +54,11 @@ def testNoDuplicates():
 ''' parent=p/child1/file1[a-b]=f'''
 def testTreeChildren():
     simple = TreePatternChild(
-        DirName(r"[a-z]*", 'p'),
+        DirGlobWithVar('p', r"[a-z]*"),
         TreePatternChild(
-            DirName(r"[A-z0-9]*1"),
+            DirGlob(r"[A-z0-9]*1"),
             TreePatternDir(
-                DirName(r"[A-z0-9\.]*", 'f'))))
+                DirGlobWithVar('f', r"[A-z0-9\.]*"))))
 
     matches = allMatches(simple, testpath + "/testdir")
     expectedMatches = [{'p': 'parent', 'f': 'file1b.txt'},
@@ -69,9 +69,9 @@ def testTreeChildren():
 def testTreeBackreferencing():
     tree = TreePatternDescendant(TreePatternList([
         TreePatternDir(
-            DirName(r"<*>a.txt", "f1")),
+            DirGlobWithVar("f1", r"<*>a.txt")),
         TreePatternDir(
-            DirName(r"\1b.txt", "f2"))]))
+            DirGlobWithVar("f2", r"\1b.txt"))]))
 
     matches = allMatches(tree, testpath + "/testdir")
     expectedMatches = [{'f1': 'file1a.txt', 'f2': 'file1b.txt'}]
@@ -80,9 +80,9 @@ def testTreeBackreferencing():
 ''' test backreferencing with parents/children '''
 def testTreeBackreferencing2():
     tree = TreePatternChild(
-        DirName(r"<*>", "f1"),
+        DirGlobWithVar("f1", r"<*>"),
         TreePatternDir(
-            DirName(r"\1.cpp", "f2")))
+            DirGlobWithVar("f2", r"\1.cpp")))
 
     matches = allMatches(tree, testpath + "/testdir2")
     expectedMatches = [{'f1': 'foo', 'f2': 'foo.cpp'}]

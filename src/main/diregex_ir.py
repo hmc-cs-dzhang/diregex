@@ -27,12 +27,12 @@ class TreePattern(Node):
     pass
 
 class TreePatternDir(TreePattern):
-    def __init__(self, dirName):
-        self.dirName = dirName
+    def __init__(self, dirItem):
+        self.dirItem = dirItem
 
 class TreePatternChild(TreePattern):
-    def __init__(self, dirName, treePattern):
-        self.dirName = dirName
+    def __init__(self, dirItem, treePattern):
+        self.dirItem = dirItem
         self.treePattern = treePattern
 
 ''' Like a TreePatternChild, but matches in current directory
@@ -46,8 +46,18 @@ class TreePatternList(TreePattern):
     def __init__(self, treePatterns):
         self.treePatterns = treePatterns
 
-class DirName(Node):
-    def __init__(self, regexPattern, var=None):
-        self.regexPattern = regexPattern
+class DirItem(Node):
+    pass
+
+class DirGlob(DirItem):
+    def __init__(self, glob):
+        self.glob = glob
+
+class DirVar(DirItem):
+    def __init__(self, var):
         self.var = var
 
+class DirGlobWithVar(DirItem):
+    def __init__(self, var, glob):
+        self.var = var
+        self.glob = glob

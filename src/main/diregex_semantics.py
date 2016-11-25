@@ -35,16 +35,16 @@ class Matcher(NodeVisitor):
         on the directory name.  If the pattern was bound to a variable, adds
         that variable to the list of matches.  Otherwise, just yields a match '''
     def visit_TreePatternDir(self, node, path, regexEnv):
-        # return node.dirName matches with the current node
-        for varEnv, newRegexEnv, _ in self.visit(node.dirName, path, regexEnv):
+        # return node.dirItem matches with the current node
+        for varEnv, newRegexEnv, _ in self.visit(node.dirItem, path, regexEnv):
             yield varEnv, newRegexEnv
 
     ''' matches against the parent and the children.  Combines the match
         dictionaries, and returns the result'''
     def visit_TreePatternChild(self, node, path, regexEnv):
-        parentMatches = self.visit(node.dirName, path, regexEnv)
+        parentMatches = self.visit(node.dirItem, path, regexEnv)
 
-        # calls visit_DirName, which in addition returns the path to child
+        # calls visit_DirGlob, which in addition returns the path to child
         # found in the match, so that you can search the child directory
         for varEnv, regexEnv, pathToChild, in parentMatches:
 
@@ -104,17 +104,25 @@ class Matcher(NodeVisitor):
     ''' Scans the directory in path, looking for something that matches the node's
         regex pattern.  Yields every match of the directory name and the node's
         variable '''
-    def visit_DirName(self, node, path, regexEnv):
+    def visit_DirGlob(self, node, path, regexEnv):
 
         for dirItem in os.scandir(path):
-            newRegexEnv = regexEnv.match(node.regexPattern, dirItem.name)
+            newRegexEnv = regexEnv.match(node.glob, dirItem.name)
             if newRegexEnv: # got a match, return the updated regex env
                 newPath = os.path.join(path, dirItem.name)
-                if node.var:     # if it was named, return the new var environment
-                    varEnv = {node.var: newPath}
-                else:
-                    varEnv = {}
+                varEnv = {}
                 yield varEnv, newRegexEnv, newPath
+
+    def visit_DirGlobWithVar(self, node, path, regexEnv):
+        for dirItem in os.scandir(path):
+            newRegexEnv = regexEnv.match(node.glob, dirItem.name)
+            if newRegexEnv:
+                newPath = os.path.join(path, dirItem.name)
+                varEnv = {node.var: newPath}
+                yield varEnv, newRegexEnv, newPath
+
+    def visit_DirVar(self, node, path, regexEnv):
+        raise NotImplementedError("Var not implemented yet")
 
 
 def match(tree, path):

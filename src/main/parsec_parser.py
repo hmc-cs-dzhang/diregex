@@ -33,7 +33,7 @@ gt      = lexeme(string('>'))
 lt      = lexeme(string('<'))
 comma   = lexeme(string(','))
 stars   = lexeme(string('**'))
-eof = lexeme(regex(r'$'))
+eof     = lexeme(regex(r'$'))
 
 globexpr  = r'[A-Za-z0-9_\*\?\[\]\-]+'
 identexpr = r'[A-Za-z_][A-Za-z_0-9]+'
@@ -45,14 +45,14 @@ glob   = lexeme(regex("({0}|<{1}={0}>)+".format(globexpr, identexpr)))
 def dirGlob():
     '''Parse a directory name'''
     globname = yield glob
-    return DirName(globname)
+    return DirGlob(globname)
 
 @generate
 def dirGlobWithVar():
     '''Parse a named directory'''
-    globname = yield glob
-    varname = yield equals >> ident
-    return DirName(globname, varname)
+    globname = yield ident
+    varname  = yield equals >> glob
+    return DirGlobWithVar(globname, varname)
 
 @generate
 def dirName():
