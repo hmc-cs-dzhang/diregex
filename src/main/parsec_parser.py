@@ -35,11 +35,11 @@ comma   = lexeme(string(','))
 stars   = lexeme(string('**'))
 eof     = lexeme(regex(r'$'))
 
-globexpr  = r'[A-Za-z0-9_\*\?\[\]\-]+'
+globexpr  = r'[A-Za-z0-9_\*\?\[\]\-\.]+'
 identexpr = r'[A-Za-z_][A-Za-z_0-9]+'
 
 ident  = lexeme(regex(identexpr))
-glob   = lexeme(regex("({0}|<{1}={0}>)+".format(globexpr, identexpr)))
+glob   = lexeme(regex("({0}|<{1}={0}>|<\\\\{1}>)+".format(globexpr, identexpr)))
 
 @generate
 def dirGlob():

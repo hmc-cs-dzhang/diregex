@@ -16,10 +16,20 @@ class Node(object):
         return pprint.pprint(self)
     '''
     def __repr__(self):
-        st = ""
-        for key in self.__dict__:
-            st += repr(key) + ": " + repr(self.__dict__[key])
-            st += "\n"
+        return self.prettyPrint(0)
+
+    def prettyPrint(self, n):
+        tab = "   "
+        name = type(self).__name__
+        st = tab*n + "%s" % name + "(\n"
+
+        for val in self.__dict__.values():
+            if issubclass(type(val), TreePattern):
+                st += val.prettyPrint(n + 1)
+                st += '\n'
+            else:
+                st += tab*(n + 1) + "%s\n" % repr(val)
+        st += tab*n + ")"
         return st
 
 # abstract class, representing the three cases of tree patterns
@@ -57,11 +67,20 @@ class DirGlob(DirItem):
     def __init__(self, glob):
         self.glob = glob
 
+    def __repr__(self):
+        return "DirGlob(%s)" % self.glob
+
 class DirVar(DirItem):
     def __init__(self, var):
         self.var = var
+
+    def __repr__(self):
+        return "DirVar(%s)" % self.var
 
 class DirGlobWithVar(DirItem):
     def __init__(self, var, glob):
         self.var = var
         self.glob = glob
+
+    def __repr__(self):
+        return "DirGlobWithVar(%s, %s)" % (self.var, self.glob)
