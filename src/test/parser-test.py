@@ -13,7 +13,7 @@ def testDirItem():
 
 ''' test a directory bound to a variable '''
 def testNamedDirItem():
-    ast = TreePatternDir(DirGlobWithVar("foo", "hello"))
+    ast = TreePatternDir(DirGlob("hello"), "foo")
     bst = parse('foo=hello')
     eq_(ast, bst)
 
@@ -54,7 +54,7 @@ def testDescedent():
         DirGlob("foo"),
         TreePatternDesc(
             TreePatternDir(
-                DirGlobWithVar("myvar", "bar"))))
+                DirGlob("bar"), "myvar")))
     bst = parse('foo/**/myvar=bar')
     eq_(ast, bst)
 
@@ -63,9 +63,11 @@ def testPattern():
     ast = TreePatternChild(
         DirGlob("foo"),
         TreePatternChild(
-            DirGlobWithVar("hey", 'test<pat=d*[?][1-2]>*a'),
+            DirGlob('test<pat=d*[?][1-2]>*a'),
             TreePatternDir(
-                DirGlobWithVar("hi", "child"))))
+                DirGlob("child"),
+                "hi"),
+            "hey"))
     bst = parse('foo/hey=test<pat=d*[?][1-2]>*a/hi=child')
     eq_(ast, bst)
 

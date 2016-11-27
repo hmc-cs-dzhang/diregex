@@ -37,26 +37,31 @@ class TreePattern(Node):
     pass
 
 class TreePatternDir(TreePattern):
-    def __init__(self, dirItem):
+    def __init__(self, dirItem, var=None):
         self.dirItem = dirItem
+        self.var = var
 
 class TreePatternChild(TreePattern):
-    def __init__(self, dirItem, treePattern):
+    def __init__(self, dirItem, treePattern, var=None):
         self.dirItem = dirItem
         self.treePattern = treePattern
+        self.var = var
 
 ''' Like a TreePatternChild, but matches in current directory
     or any descendant'''
 class TreePatternDesc(TreePattern):
-    def __init__(self, treePattern):
+    def __init__(self, treePattern, var=None):
         self.treePattern = treePattern
+        self.var = var
 
 class TreePatternList(TreePattern):
     # takes in a list of tree patterns
-    def __init__(self, treePatterns):
+    def __init__(self, treePatterns, var=None):
         self.treePatterns = treePatterns
+        self.var = var
 
 class TreePatternVar(TreePattern):
+    '''refers to an existing var in the ast'''
     def __init__(self, var):
         self.var = var
 
@@ -70,25 +75,11 @@ class DirGlob(DirItem):
     def __repr__(self):
         return "DirGlob(%s)" % self.glob
 
-class DirVar(DirItem):
-    def __init__(self, var):
-        self.var = var
-
-    def __repr__(self):
-        return "DirVar(%s)" % self.var
-
-class DirGlobWithVar(DirItem):
-    def __init__(self, var, glob):
-        self.var = var
-        self.glob = glob
-
-    def __repr__(self):
-        return "DirGlobWithVar(%s, %s)" % (self.var, self.glob)
-
 ast = TreePatternDesc(
     TreePatternChild(
         DirGlob("*hi"),
         TreePatternDir(
-            DirGlobWithVar("var", "*hey"))))
+            DirGlob("*hey"),
+            "var")))
 
 print(ast.prettyPrint(0))

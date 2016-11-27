@@ -63,12 +63,14 @@ def dirName():
 @generate
 def treePatternList():
     ''' parse a tree pattern'''
+    #var = yield ident << equals
     pats = yield lparen >> sepBy(treePattern, comma) << rparen
     return TreePatternList(pats)
 
 @generate
 def treePatternDir():
     ''' parse a trivial treePattern'''
+    #var = yield ident << equals
     dName = yield dirName
     return TreePatternDir(dName)
 
@@ -81,7 +83,7 @@ def treePatternChild():
 
 @generate
 def treePatternDesc():
-    ''' parse a tree pattern of the form ** '''
+    ''' parse a tree pattern of the form **/ '''
     child = yield stars >> slash >> treePattern
     return TreePatternDesc(child)
 
@@ -92,13 +94,26 @@ def treePatternVar():
     return TreePatternVar(var)
 
 @generate
+def tPatWithoutVar():
+    tPat = yield treePatternDesc \
+           ^ treePatternChild \
+           ^ treePatternList \
+           ^ treePatternDir \
+           ^ treePatternVar
+    return tPat
+
+@generate
+def tPatWithVar():
+    var  = yield ident << equals
+    tPat = yield tPatWithoutVar
+
+    tPat.var = var
+    return tPat
+
+@generate
 def treePattern():
     ''' parse an arbitrary tree pattern '''
-    tpat = yield treePatternDesc \
-                ^ treePatternChild \
-                ^ treePatternList \
-                ^ treePatternDir \
-                ^ treePatternVar
+    tpat = yield tPatWithVar ^ tPatWithoutVar
     return tpat
 
 program = whitespace >> treePattern << eof
