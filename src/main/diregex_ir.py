@@ -19,7 +19,7 @@ class Node(object):
         return self.prettyPrint(0)
 
     def prettyPrint(self, n):
-        tab = "   "
+        tab = "  "
         name = type(self).__name__
         st = tab*n + "%s" % name + "(\n"
 
@@ -84,3 +84,11 @@ class DirGlobWithVar(DirItem):
 
     def __repr__(self):
         return "DirGlobWithVar(%s, %s)" % (self.var, self.glob)
+
+ast = TreePatternDesc(
+    TreePatternChild(
+        DirGlob("*hi"),
+        TreePatternDir(
+            DirGlobWithVar("var", "*hey"))))
+
+print(ast.prettyPrint(0))
