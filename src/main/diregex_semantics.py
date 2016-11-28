@@ -20,36 +20,44 @@ class NodeVisitor(object):
     def generic_visit(self, node, currDir):
         raise Exception('No visit_{} method'.format(type(node).__name__))
 
-'''
-Each function takes in a regex environment, which contains the expression
-variables that have been matched so far.  They then output a new variable
-environment, containing the variables that matched with entire directory
-names, and a regexEnv if there was a match.
-'''
+
 class Matcher(NodeVisitor):
+    '''
+    Each function takes in a regex environment, which contains the expression
+    variables that have been matched so far.  They then output a new variable
+    environment, containing the variables that matched with entire directory
+    names, and a regexEnv if there was a match.
+    '''
 
     def visit(self, node, currDir, regexEnv):
         return NodeVisitor.visit(self, node, currDir, regexEnv)
 
-    ''' Matches a TreePatternDir against a path.  Calls the visit method
-        on the directory name.  If the pattern was bound to a variable, adds
-        that variable to the list of matches.  Otherwise, just yields a match '''
-    def visit_TreePatternDir(self, node, path, regexEnv):
-        # return node.dirItem matches with the current node
-        for varEnv, newRegexEnv, _ in self.visit(node.dirItem, path, regexEnv):
-            yield varEnv, newRegexEnv
 
-    ''' matches against the parent and the children.  Combines the match
-        dictionaries, and returns the result'''
+    def visit_TreePatternDir(self, node, path, regexEnv):
+        '''
+        Matches a TreePatternDir against a path.  If the pattern was named,
+        returns a new environment mapping the variable name to the path.
+        Otherwise, returns and empty environment.  Also returns the updated
+        RegexEnv so that future patterns can refer back to it.
+        '''
+        for newPath, newRegexEnv in self.visit(node.dirItem, path, regexEnv):
+            yield ({node.var: newPath} if node.var else {}), newRegexEnv
+
     def visit_TreePatternChild(self, node, path, regexEnv):
-        parentMatches = self.visit(node.dirItem, path, regexEnv)
+        '''
+        Matches against the parent and the children.  Combines the match
+        dictionaries, and returns the result
+        '''
 
         # calls visit_DirGlob, which in addition returns the path to child
         # found in the match, so that you can search the child directory
-        for varEnv, regexEnv, pathToChild, in parentMatches:
+        for newPath, regexEnv in self.visit(node.dirItem, path, regexEnv):
+
+            # if this is a named node
+            varEnv = ({node.var: newPath} if node.var else {})
 
             # receive generators from each of the children
-            childrenMatches = self.visit(node.treePattern, pathToChild, regexEnv)
+            childrenMatches = self.visit(node.treePattern, newPath, regexEnv)
 
             for newVarEnv, newRegexEnv in childrenMatches:
                 # merge the two varEnvs
@@ -58,24 +66,32 @@ class Matcher(NodeVisitor):
                 yield newVarEnv, newRegexEnv
 
 
-    ''' matches against a list of tree patterns.  For each pattern in the list,
-        calls visit method to obtain a generator.  Then takes the product of all
-        those generators to yield a result'''
     def visit_TreePatternList(self, node, path, regexEnv):
+        '''
+        Matches against a list of tree patterns.  For each pattern in the list,
+        calls visit method to obtain a generator.  Then takes the product of all
+        those generators to yield a result
+        '''
         visit_method = getattr(self, 'visit')
         visitData = [(tree, path) for tree in node.treePatterns]
         for varEnv, newRegexEnv in self.lazyProduct(visitData, regexEnv):
+            # if the node is named, add a tuple of the values to the environment
+            if node.var:
+                newEntry = {node.var: tuple(varEnv.values())}
+                varEnv.update(newEntry)
+
             yield varEnv, newRegexEnv
 
-    '''
-    Finds the cartesian product of the results of the different elements in the
-    list.  This is different from taking the `Product` of generators, which
-    calls each function once to build up a list, and then takes the product of
-    that list.  Instead, lazyProduct will make a function call again instead of
-    storing the result in a list, which is needed because the regex environment
-    changes
-    '''
+
     def lazyProduct(self, visitData, regexEnv):
+        '''
+        Finds the cartesian product of the results of the different elements in
+        the list.  This is different from taking the `Product` of generators,
+        which calls each function once to build up a list, and then takes the
+        product of that list.  Instead, lazyProduct will make a function call
+        again instead of storing the result in a list, which is needed because
+        the regex environment changes
+        '''
         if len(visitData) == 0:
             raise Exception("Can't have an empty list")
 
@@ -96,34 +112,23 @@ class Matcher(NodeVisitor):
 
 
     def visit_TreePatternDesc(self, node, path, regexEnv):
-
+        if node.var:
+            raise Exception("Cannot name TreePatternDesc")
         for descPath, _, _ in os.walk(path):
             for varEnv, newRegexEnv in self.visit(node.treePattern, descPath, regexEnv):
                 yield varEnv, newRegexEnv
 
-    ''' Scans the directory in path, looking for something that matches the node's
-        regex pattern.  Yields every match of the directory name and the node's
-        variable '''
     def visit_DirGlob(self, node, path, regexEnv):
-
+        '''
+        Scans the directory in path, looking for something that matches the node's
+        regex pattern.  Yields every match of the directory name and the node's
+        variable
+        '''
         for dirItem in os.scandir(path):
             newRegexEnv = regexEnv.match(node.glob, dirItem.name)
             if newRegexEnv: # got a match, return the updated regex env
                 newPath = os.path.join(path, dirItem.name)
-                varEnv = {}
-                yield varEnv, newRegexEnv, newPath
-
-    def visit_DirGlobWithVar(self, node, path, regexEnv):
-        for dirItem in os.scandir(path):
-            newRegexEnv = regexEnv.match(node.glob, dirItem.name)
-            if newRegexEnv:
-                newPath = os.path.join(path, dirItem.name)
-                varEnv = {node.var: newPath}
-                yield varEnv, newRegexEnv, newPath
-
-    def visit_DirVar(self, node, path, regexEnv):
-        raise NotImplementedError("Var not implemented yet")
-
+                yield newPath, newRegexEnv
 
 def match(tree, path):
     matcher = Matcher()
