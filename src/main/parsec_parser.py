@@ -34,6 +34,8 @@ lt      = lexeme(string('<'))
 comma   = lexeme(string(','))
 stars   = lexeme(string('**'))
 eof     = lexeme(regex(r'$'))
+match_tok   = lexeme(string('match'))
+dest_tok    = lexeme(string('dest'))
 
 globexpr  = r'[A-Za-z0-9_\*\?\[\]\-\.]+'
 identexpr = r'[A-Za-z_][A-Za-z_0-9]+'
@@ -116,7 +118,29 @@ def treePattern():
     tpat = yield tPatWithVar ^ tPatWithoutVar
     return tpat
 
-program = whitespace >> treePattern << eof
+@generate
+def match():
+    ''' parse a match statement '''
+    tpat = yield match_tok >> treePattern
+    return Match(tpat)
+
+@generate
+def dest():
+    ''' parse a destination statement '''
+    tpat = yield dest_tok >> treePattern
+    return Dest(tpat)
+
+@generate
+def statement():
+    ''' parse a statement, which is one of the above three items'''
+    stmt = yield match ^ dest ^ treePattern
+    return stmt
+
+@generate
+def program():
+    ''' parse a program: a list of statements'''
+    prog = yield whitespace >> many1(statement) << eof
+    return Prog(prog)
 
 def parse(st):
     return program.parse(st)

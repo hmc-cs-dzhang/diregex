@@ -32,8 +32,31 @@ class Node(object):
         st += tab*n + ")"
         return st
 
+class Prog(Node):
+    def __init__(self, stmts):
+        self.stmts = stmts
+
+    def __eq__(self, other):
+        if len(self.stmts) != len(other.stmts):
+            return False
+        for i in range(len(self.stmts)):
+            if self.stmts[i] != other.stmts[i]:
+                 return False
+        return True
+
+class Stmt(Node):
+    pass
+
+class Match(Stmt):
+    def __init__(self, tree):
+        self.tree = tree
+
+class Dest(Stmt):
+    def __init__(self, tree):
+        self.tree = tree
+
 # abstract class, representing the three cases of tree patterns
-class TreePattern(Node):
+class TreePattern(Stmt):
     pass
 
 class TreePatternDir(TreePattern):
