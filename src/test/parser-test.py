@@ -82,6 +82,7 @@ def testVar():
     eq_(ast, bst)
 
 def testMatchDest():
+    ''' parses a program with src and dest trees '''
     ast = Prog([
         Match(
             TreePatternList([
@@ -109,7 +110,7 @@ def testMatchDest():
     eq_(ast, bst)
 
 def testVarMatchDest():
-
+    ''' parses a program with src, dest trees and other stmts '''
     ast = Prog([
         TreePatternDir(
             DirGlob('<pat=*>.cpp'),

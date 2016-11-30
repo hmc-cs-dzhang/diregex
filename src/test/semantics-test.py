@@ -110,4 +110,16 @@ def testTreeBackreferencing2():
     expectedMatches = [{'f1': 'foo', 'f2': 'foo.cpp'}]
     eq_(matches, expectedMatches)
 
+def testVar():
+    parentAst = TreePatternDir(
+        DirGlob('par*t'),
+        "p")
 
+    varEnv = {"p": parentAst}
+
+    ast = TreePatternVar("p")
+
+    matchList = allMatches(ast, os.path.join(testpath, "testdir"), varEnv)
+    expectedMatches = [{'p': 'parent'}]
+
+    eq_(matchList, expectedMatches)
