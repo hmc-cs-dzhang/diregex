@@ -57,6 +57,15 @@ class Subst(object):
         #todo: update a regex env
         pass
 
+def updateEnv(node, env = None):
+    subst = Subst()
+
+    if not env:
+        env = {}
+
+    subst.visit(ast, env)
+    return env
+
 def test():
     subst = Subst()
 
