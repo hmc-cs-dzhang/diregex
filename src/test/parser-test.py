@@ -1,15 +1,10 @@
 import sys
 from nose.tools import eq_
 sys.path.append("../main")
-from pprint import pprint
-from parsec_parser import parse
+sys.path.insert(0, "../main/parser")
+from parser import parse
 from diregex_ir import *
 
-''' test a simple directory '''
-def testDirItem():
-    ast = Prog([TreePatternDir(DirGlob("hello"))])
-    bst = parse('hello')
-    eq_(ast, bst)
 
 ''' test a directory bound to a variable '''
 def testNamedDirItem():
@@ -22,63 +17,64 @@ def testPath():
     ast = Prog([TreePatternChild(
             DirGlob("foo"),
             TreePatternDir(
-                DirGlob("bar*")))])
-    bst = parse('foo/bar*')
+                DirGlob("bar*")),
+            "var")])
+    bst = parse('var = foo/bar*')
     eq_(ast, bst)
 
 def testSiblings1():
-    ast = Prog([TreePatternList([
+    ast = Prog([Match(TreePatternList([
             TreePatternDir(
                 DirGlob("sib1")),
             TreePatternDir(
-                DirGlob("sib2"))])])
-    bst = parse('(sib1, sib2)')
+                DirGlob("sib2"))]))])
+    bst = parse('match (sib1, sib2)')
     eq_(ast, bst)
 
 ''' a parent with two children '''
 def testSiblings2():
-    ast = Prog([TreePatternChild(
+    ast = Prog([Match(TreePatternChild(
             DirGlob("foo"),
             TreePatternList(
                 [TreePatternDir(
                     DirGlob("bar1")),
                 TreePatternDir(
-                    DirGlob("bar2"))]))])
-    bst = parse('foo/(bar1, bar2)')
+                    DirGlob("bar2"))])))])
+    bst = parse('match foo/(bar1, bar2)')
 
     eq_(ast, bst)
 
 ''' descendent '''
 def testDescedent():
-    ast = Prog([TreePatternChild(
+    ast = Prog([Match(TreePatternChild(
             DirGlob("foo"),
             TreePatternDesc(
                 TreePatternDir(
-                    DirGlob("bar"), "myvar")))])
-    bst = parse('foo/**/myvar=bar')
+                    DirGlob("bar"), "myvar"))))])
+    bst = parse('match foo/**/myvar=bar')
     eq_(ast, bst)
 
 ''' pattern '''
 def testPattern():
-    ast = Prog([TreePatternChild(
+    ast = Prog([Match(TreePatternChild(
             DirGlob("foo"),
             TreePatternChild(
                 DirGlob('test<pat=d*[?][1-2]>*a'),
                 TreePatternDir(
                     DirGlob("child"),
                     "hi"),
-                "hey"))])
+                "hey")))])
     bst = parse('''
-        foo/hey=test<pat=d*[?][1-2]>*a/hi=child
+        match foo/hey=test<pat=d*[?][1-2]>*a/hi=child
 
         ''')
     eq_(ast, bst)
 
 def testVar():
-    ast = Prog([TreePatternChild(
-            DirGlob("foo"),
-            TreePatternVar("var"))])
-    bst = parse(r'foo/{var}')
+    ast = Prog([Dest(TreePatternChild(
+            DirName("foo"),
+            TreePatternVar("var")))])
+    bst = parse(r'dest foo/{var}')
     eq_(ast, bst)
 
 def testMatchDest():
@@ -98,7 +94,7 @@ def testMatchDest():
                         'testfile'))])),
         Dest(
             TreePatternChild(
-                DirGlob(r'<\pat>'),
+                DirName(r'<\pat>'),
                 TreePatternList([
                     TreePatternVar('srcfile'),
                     TreePatternVar('testfile')])))])
@@ -128,7 +124,7 @@ def testVarMatchDest():
                     TreePatternVar("testfile"))])),
         Dest(
             TreePatternChild(
-                DirGlob(r'<\pat>'),
+                DirName(r'<\pat>'),
                 TreePatternList([
                     TreePatternVar("srcfile"),
                     TreePatternVar("testfile")])))])

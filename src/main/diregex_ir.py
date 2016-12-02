@@ -98,11 +98,9 @@ class DirGlob(DirItem):
     def __repr__(self):
         return "DirGlob(%s)" % self.glob
 
-ast = TreePatternDesc(
-    TreePatternChild(
-        DirGlob("*hi"),
-        TreePatternDir(
-            DirGlob("*hey"),
-            "var")))
+class DirName(DirItem):
+    def __init__(self, name):
+        self.name = name
 
-print(ast.prettyPrint(0))
+    def __repr__(self):
+        return "DirName(%s)" % self.name
