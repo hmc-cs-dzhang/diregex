@@ -1,8 +1,5 @@
-import sys
-sys.path.append("../")
-
 from lexemes import *
-from diregex_ir import *
+from ir import *
 from parsec import *
 
 

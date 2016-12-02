@@ -1,4 +1,4 @@
-import diregex_exec
+import exec
 
 def main():
     diregex = input("enter diregex: ")
@@ -8,7 +8,7 @@ def main():
         command += line + '\n'
         line = input("enter command: ")
 
-    diregex_exec.test(diregex, command)
+    exec.test(diregex, command)
 
 
 

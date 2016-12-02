@@ -1,18 +1,17 @@
-import sys
-sys.path.append("../")
-
 from lexemes import *
-from diregex_ir import *
+from ir import *
 from parsec import *
 
 
 ''' My current grammar for source trees (matches)
 
+<assignment> : IDENT EQUALS <tree-pattern-without-var>
+
 <tree-pattern> : IDENT EQUALS <tree-pattern-without-var>
                | <tree-pattern-without-var>
 
-<tree-pattern-without-var> : <dir-glob>                         # DirGlob
-                           | <dir-glob> SLASH <tree-pattern>    # Child
+<tree-pattern-without-var> : <dir-name>                         # DirGlob
+                           | <dir-name> SLASH <tree-pattern>    # Child
                            | DOUBLE_STAR SLASH <tree-pattern>   # Descendant
                            | LPAREN <tree-pattern-list> RPAREN  # List
                            | LBRACE IDENT RBRACE                # Variable
@@ -20,7 +19,7 @@ from parsec import *
 <tree-pattern-list> : | <tree-pattern>
                       | <tree-pattern> COMMA <tree-pattern-list>
 
-<dir-glob> : GLOB
+<dir-name> : GLOB
 '''
 
 
@@ -33,26 +32,26 @@ def dirGlob():
 @generate
 def treePatternList():
     ''' parse a tree pattern'''
-    pats = yield lparen >> sepBy(matchTreePattern, comma) << rparen
+    pats = yield lparen >> sepBy(treePattern, comma) << rparen
     return TreePatternList(pats)
 
 @generate
 def treePatternDir():
     ''' parse a trivial treePattern'''
-    dName = yield dirGlob
-    return TreePatternDir(dName)
+    dGlob = yield dirGlob
+    return TreePatternDir(dGlob)
 
 @generate
 def treePatternChild():
     ''' parse a tree pattern with children '''
     parent = yield dirGlob
-    children = yield slash >> matchTreePattern
+    children = yield slash >> treePattern
     return TreePatternChild(parent, children)
 
 @generate
 def treePatternDesc():
     ''' parse a tree pattern of the form **/ '''
-    child = yield stars >> slash >> matchTreePattern
+    child = yield stars >> slash >> treePattern
     return TreePatternDesc(child)
 
 @generate
@@ -79,9 +78,14 @@ def tPatWithVar():
     return tPat
 
 @generate
-def matchTreePattern():
+def treePattern():
+    tPat = yield tPatWithVar ^ tPatWithoutVar
+    return tPat
+
+@generate
+def assignment():
     ''' parse an arbitrary tree pattern '''
-    tpat = yield tPatWithVar ^ tPatWithoutVar
+    tpat = yield tPatWithVar
     return tpat
 
 

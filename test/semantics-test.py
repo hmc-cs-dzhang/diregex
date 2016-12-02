@@ -1,10 +1,8 @@
-import sys
 import os
 from nose.tools import eq_
-sys.path.append("../main")
 
-from diregex_ir import *
-from diregex_semantics import allMatches
+from ir import *
+from semantics import allMatches
 
 # copied from diregex_semantics.py.
 # Add imports and change directory

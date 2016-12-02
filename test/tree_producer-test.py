@@ -1,10 +1,8 @@
-import sys
 import os
 from nose.tools import eq_
-sys.path.append("../main")
 
-from diregex_ir import *
-from diregex_tree_producer import produceDirTree
+from ir import *
+from tree_producer import produceDirTree
 
 os.chdir("testdir4")
 testPath = os.getcwd()

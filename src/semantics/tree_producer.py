@@ -1,7 +1,7 @@
 import os
 import shutil
-from diregex_semantics import *
-from diregex_ir import *
+from semantics import *
+from ir import *
 
 class Producer(object):
 

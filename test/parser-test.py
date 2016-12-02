@@ -1,9 +1,6 @@
-import sys
 from nose.tools import eq_
-sys.path.append("../main")
-sys.path.insert(0, "../main/parser")
 from parser import parse
-from diregex_ir import *
+from ir import *
 
 
 ''' test a directory bound to a variable '''

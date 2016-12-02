@@ -1,7 +1,4 @@
-import sys
-sys.path.append("../")
-
-from diregex_ir import *
+from ir import *
 from parsec import *
 from lexemes import *
 from match_parser import matchTreePattern

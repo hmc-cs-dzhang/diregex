@@ -1,7 +1,4 @@
 from nose.tools import eq_
-import sys
-
-sys.path.append("../main")
 from regex_env import RegexEnv
 '''
 def testTrivial():

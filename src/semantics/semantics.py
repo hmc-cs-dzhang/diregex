@@ -2,7 +2,7 @@ import os
 import re
 import itertools
 from functools import partialmethod
-from diregex_ir import *
+from ir import *
 from regex_env import RegexEnv
 
 ## Use the visitor pattern, from Let's Build a Simple Interpreter
