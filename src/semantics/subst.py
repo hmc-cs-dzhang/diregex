@@ -50,20 +50,18 @@ class Subst(object):
             varEnv.update({node.var, node})
 
     def visit_TreePatternVar(self, node, varEnv, regexEnv):
-        var = node.var
-        if not var in varEnv:
-            raise Exception("variable %s has not been declared" % var)
-        else:
-            return varEnv[var], varEnv
-
+        if node.var not in varEnv:
+            raise KeyError("variable '%s' does not exist" % node.var)
+        pass
 
     ############## Visiting DirItems ######################
 
     def visit_DirGlob(self, dirItem, _, regexEnv):
         for name, pat in parsePattern(dirItem.glob):
+
             if name in regexEnv:
                 raise KeyError("pattern name '%s' already exists" % name)
-            print("named pattern is, %s: %s" % (name, pat))
+
             regexEnv[name] = pat
 
 
@@ -78,7 +76,7 @@ def updateEnv(node, varEnv=None, regexEnv=None):
         regexEnv = {}
 
     subst.visit(node, varEnv, regexEnv)
-    return varEnv
+    return varEnv, regexEnv
 '''
 def test():
     subst = Subst()

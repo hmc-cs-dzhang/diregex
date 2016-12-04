@@ -24,8 +24,6 @@ def main():
     program = r'''
     srcfile = <pat=*>.cpp
     testfile = <\pat>_test.cpp
-    '''
-    '''
     match (src/{srcfile}, test/{testfile})
     dest foo/({srcfile}, {testfile})
     '''

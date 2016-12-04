@@ -10,9 +10,6 @@ from parser import parse, parseAssign, parseMatch, parseDest
 from ir import *
 
 
-def isAssign(line):
-    return not (line.startswith('match') or line.startswith('dest'))
-
 def run(program):
 
     path = "../../test/testdir4"
@@ -26,7 +23,7 @@ def run(program):
 
         # Read in assignments, and add them to the environment
         if type(stmt) is Assign:
-            varEnv = updateEnv(stmt.tree, varEnv, regexEnv)
+            varEnv, regexEnv = updateEnv(stmt.tree, varEnv, regexEnv)
 
         # Once we hit a match, iterate through all the matches, and
         # perform the action specified in the destination tree

@@ -118,7 +118,7 @@ class RegexEnv(object):
         j = i
         name = ''
         while True:
-            if pat[j] == ':': # it was a named pattern
+            if pat[j] == '=': # it was a named pattern
                 name = '(?P<%s>' % name
                 i = j + 1
                 break
