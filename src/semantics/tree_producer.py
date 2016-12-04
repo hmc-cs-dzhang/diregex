@@ -31,6 +31,14 @@ class Producer(object):
         if var in varEnv:
             # move whatever the old file to the current location
             shutil.move(varEnv[var], path)
+
+            # remove parent directory if it is empty
+            parent = os.path.abspath(os.path.join(varEnv[var], os.pardir))
+            try:
+                os.rmdir(parent)
+            except OSError:
+                pass
+
             return varEnv[var]
         else:
             raise Exception("Variable '%s' does not exist" % var)

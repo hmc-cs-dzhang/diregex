@@ -63,9 +63,6 @@ def test2():
     os.remove('bar/bar_test.cpp')
     os.rmdir('bar')
 
-    os.rmdir('src')
-    os.rmdir('test')
-
     checkEmpty()
 
 
@@ -96,5 +93,38 @@ def test3():
     os.remove('bar/bar_test.cpp')
     os.rmdir('bar')
 
+def test4():
+    """ does the opposite of the above test """
+    os.mkdir("foo")
+    open('foo/foo.cpp', 'a').close()
+    open('foo/foo_test.cpp', 'a').close()
+
+    os.mkdir("bar")
+    open('bar/bar.cpp', 'a').close()
+    open('bar/bar_test.cpp', 'a').close()
+
+    # shouldn't copy dummy, since dummy1 doesn't match the pattern
+    os.mkdir("dummy")
+    open('dummy/dummy1.cpp', 'a').close()
+    open('dummy/dummy_test.cpp', 'a').close()
+
+    prog = r"""
+    match <pat=*>/(srcfile=<\pat>.cpp, testfile=<\pat>_test.cpp)
+    dest (src/{srcfile}, test/{testfile})
+    """
+
+    run(prog)
+
+    os.remove('src/foo.cpp')
+    os.remove('src/bar.cpp')
     os.rmdir('src')
+
+    os.remove('test/foo_test.cpp')
+    os.remove('test/bar_test.cpp')
     os.rmdir('test')
+
+    os.remove('dummy/dummy1.cpp')
+    os.remove('dummy/dummy_test.cpp')
+    os.rmdir('dummy')
+
+
