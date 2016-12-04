@@ -26,9 +26,8 @@ def testTrivial():
     tree = TreePatternDir(
         DirGlob("par*t"),
         "p")
-
-    matchList = allMatches(tree, os.path.join(testpath, "testdir"))
-    print(testpath)
+    namedVars = {'p'}
+    matchList = allMatches(tree, os.path.join(testpath, "testdir"), namedVars)
     expectedMatches = [{'p': 'parent'}]
 
     eq_(matchList, expectedMatches)
@@ -44,8 +43,8 @@ def testTreeList():
         TreePatternDir(
             DirGlob(r"*2"),
             "var3")]))
-
-    matchList = allMatches(treeList, testpath)
+    namedVars = {'var1', 'var2', 'var3'}
+    matchList = allMatches(treeList, testpath, namedVars)
 
     expectedMatches = [{'var3': 'child2', 'var2': 'file1b.txt'},
         {'var3': 'child2', 'var2': 'file1a.txt'}]
@@ -60,7 +59,8 @@ def testNoDuplicates():
             TreePatternDir(
                 DirGlob(r'*')),
             "var"))
-    matchList = allMatches(treeList, testpath)
+    namedVars = {'var'}
+    matchList = allMatches(treeList, testpath, namedVars)
 
     expectedMatches = [{'var': 'parent'}]
     eq_(matchList, expectedMatches)
@@ -76,7 +76,8 @@ def testTreeChildren():
                 "f")),
         "p")
 
-    matches = allMatches(simple, testpath + "/testdir")
+    namedVars = {'p', 'f'}
+    matches = allMatches(simple, testpath + "/testdir", namedVars)
     expectedMatches = [{'p': 'parent', 'f': 'file1b.txt'},
         {'p': 'parent','f': 'file1a.txt'}]
     eq_(matches, expectedMatches)
@@ -90,8 +91,8 @@ def testTreeBackreferencing():
         TreePatternDir(
             DirGlob(r"\1b.txt"),
             "f2")]))
-
-    matches = allMatches(tree, testpath + "/testdir")
+    namedVars = {'f1', 'f2'}
+    matches = allMatches(tree, testpath + "/testdir", namedVars)
     expectedMatches = [{'f1': 'file1a.txt', 'f2': 'file1b.txt'}]
     eq_(matches, expectedMatches)
 
@@ -103,8 +104,9 @@ def testTreeBackreferencing2():
             DirGlob(r"\1.cpp"),
             "f2"),
         "f1")
+    namedVars = {'f1', 'f2'}
 
-    matches = allMatches(tree, testpath + "/testdir2")
+    matches = allMatches(tree, testpath + "/testdir2", namedVars)
     expectedMatches = [{'f1': 'foo', 'f2': 'foo.cpp'}]
     eq_(matches, expectedMatches)
 
@@ -114,10 +116,11 @@ def testVar():
         "p")
 
     varEnv = {"p": parentAst}
-
     ast = TreePatternVar("p")
 
-    matchList = allMatches(ast, os.path.join(testpath, "testdir"), varEnv)
+    namedVars = {'p'}
+
+    matchList = allMatches(ast, os.path.join(testpath, "testdir"), namedVars, varEnv)
     expectedMatches = [{'p': 'parent'}]
 
     eq_(matchList, expectedMatches)

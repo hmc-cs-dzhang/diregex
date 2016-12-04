@@ -178,12 +178,12 @@ def newEnv(varEnv, varEnvs):
             return False
     return True
 
-def allMatches(tree, path, varEnv = None):
+def allMatches(tree, path, namedVars, varEnv = None):
     if not varEnv:
         varEnv = {}
 
     matchList = []
-    for varEnv, _ in match(tree, path, varEnv):
+    for varEnv, _ in match(tree, path, namedVars, varEnv):
         baseVarEnv = {v: os.path.basename(p) for v, p in varEnv.items()}
         matchList.append(baseVarEnv)
         '''
