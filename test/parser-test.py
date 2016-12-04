@@ -5,17 +5,18 @@ from ir import *
 
 ''' test a directory bound to a variable '''
 def testNamedDirItem():
-    ast = Prog([TreePatternDir(DirGlob("hello"), "foo")])
+    ast = Prog([Assign(
+        TreePatternDir(DirGlob("hello"), "foo"))])
     bst = parse('foo=hello')
     eq_(ast, bst)
 
 ''' a small path '''
 def testPath():
-    ast = Prog([TreePatternChild(
+    ast = Prog([Assign(TreePatternChild(
             DirGlob("foo"),
             TreePatternDir(
                 DirGlob("bar*")),
-            "var")])
+            "var"))])
     bst = parse('var = foo/bar*')
     eq_(ast, bst)
 
@@ -105,12 +106,14 @@ def testMatchDest():
 def testVarMatchDest():
     ''' parses a program with src, dest trees and other stmts '''
     ast = Prog([
-        TreePatternDir(
-            DirGlob('<pat=*>.cpp'),
-            "srcfile"),
-        TreePatternDir(
-            DirGlob('<\pat>_test.cpp'),
-            "testfile"),
+        Assign(
+            TreePatternDir(
+                DirGlob('<pat=*>.cpp'),
+                "srcfile")),
+        Assign(
+            TreePatternDir(
+                DirGlob('<\pat>_test.cpp'),
+                "testfile")),
         Match(
             TreePatternList([
                 TreePatternChild(

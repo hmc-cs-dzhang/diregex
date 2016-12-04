@@ -2,7 +2,7 @@ import os
 from nose.tools import eq_
 
 from ir import *
-from semantics import allMatches
+from matcher import allMatches
 
 # copied from diregex_semantics.py.
 # Add imports and change directory

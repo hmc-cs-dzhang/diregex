@@ -1,6 +1,6 @@
 import os
 import shutil
-from semantics import *
+from matcher import *
 from ir import *
 
 class Producer(object):
@@ -32,10 +32,10 @@ class Producer(object):
             shutil.move(env[var], path)
             return env[var]
         else:
-            raise Exception('Variable %s does not exist' % var)
+            raise Exception("Variable '%s' does not exist" % var)
 
-    def visit_DirGlob(self, node, path, env):
-        name = node.glob
+    def visit_DirName(self, node, path, env):
+        name = node.name
         if name in os.listdir(path):
             print("directory " + name + " already exists")
         else:

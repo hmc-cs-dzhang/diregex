@@ -55,6 +55,11 @@ class Dest(Stmt):
     def __init__(self, tree):
         self.tree = tree
 
+class Assign(Stmt):
+    # The variable name is stored in the root node of the tree
+    def __init__(self, tree):
+        self.tree = tree
+
 # abstract class, representing the three cases of tree patterns
 class TreePattern(Stmt):
     pass

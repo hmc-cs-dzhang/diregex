@@ -56,7 +56,6 @@ def destTreePattern():
            ^ treePatternList \
            ^ treePatternDir \
            ^ treePatternVar
-    print("parsing dest tree")
     return tPat
 
 

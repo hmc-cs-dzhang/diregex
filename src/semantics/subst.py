@@ -1,5 +1,9 @@
-from diregex_ir import *
-from parsec_parser import parse
+import sys
+sys.path.append("../ir")
+sys.path.insert(0, "../parser")
+
+from ir import *
+from parser import parse
 from copy import deepcopy
 
 
@@ -63,9 +67,9 @@ def updateEnv(node, env = None):
     if not env:
         env = {}
 
-    subst.visit(ast, env)
+    subst.visit(node, env)
     return env
-
+'''
 def test():
     subst = Subst()
 
@@ -82,4 +86,4 @@ def test():
     print(env)
 
 test()
-
+'''

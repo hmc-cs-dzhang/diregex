@@ -8,7 +8,7 @@ os.chdir("testdir4")
 testPath = os.getcwd()
 
 def testTrivial():
-    treeList = TreePatternDir(DirGlob("folder"))
+    treeList = TreePatternDir(DirName("folder"))
 
     produceDirTree(treeList, testPath)
     os.rmdir("folder")
@@ -16,9 +16,9 @@ def testTrivial():
 def testChildren():
     """ parent/child"""
     treeList = TreePatternChild(
-        DirGlob("parent"),
+        DirName("parent"),
         TreePatternDir(
-            DirGlob("child")))
+            DirName("child")))
 
     produceDirTree(treeList, testPath)
     os.removedirs("parent/child")
@@ -27,9 +27,9 @@ def testChildren():
 def testSiblings():
     treeList = TreePatternList(
         [TreePatternDir(
-            DirGlob("sib1")),
+            DirName("sib1")),
         TreePatternDir(
-            DirGlob("sib2"))])
+            DirName("sib2"))])
 
     produceDirTree(treeList, testPath)
     os.rmdir("sib1")
@@ -40,12 +40,12 @@ def testChildrenSiblings():
     parent/(sib1, sib2)
     """
     treeList = TreePatternChild(
-        DirGlob("parent"),
+        DirName("parent"),
         TreePatternList(
             [TreePatternDir(
-                DirGlob("sib1")),
+                DirName("sib1")),
             TreePatternDir(
-                DirGlob("sib2"))]))
+                DirName("sib2"))]))
 
     produceDirTree(treeList, testPath)
     os.rmdir("parent/sib1")
@@ -56,17 +56,17 @@ def testBig():
     project/(main/(header, src), test)
     """
     treeList = TreePatternChild(
-        DirGlob("project"),
+        DirName("project"),
         TreePatternList(
             [TreePatternChild(
-                DirGlob("main"),
+                DirName("main"),
                 TreePatternList(
                     [TreePatternDir(
-                        DirGlob("header")),
+                        DirName("header")),
                     TreePatternDir(
-                        DirGlob("src"))])),
+                        DirName("src"))])),
             TreePatternDir(
-                DirGlob("test"))]))
+                DirName("test"))]))
 
     produceDirTree(treeList, testPath)
 
@@ -84,7 +84,7 @@ def testVar():
     env = {'srcfile' : './newfile.cpp'}
 
     treeList = TreePatternChild(
-        DirGlob("src"),
+        DirName("src"),
         TreePatternVar("srcfile"))
 
     produceDirTree(treeList, testPath, env)

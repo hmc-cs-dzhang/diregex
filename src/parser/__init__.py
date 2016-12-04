@@ -1,2 +1,2 @@
 import sys
-sys.path.insert("../")
+sys.path.insert(0, "../")

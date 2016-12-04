@@ -34,7 +34,16 @@ def dest():
 def assign():
     ''' an assignment is just a specific type of tree pattern '''
     a = yield assignment
-    return a
+    return Assign(a)
 
 def parse(st):
     return program.parse(st)
+
+def parseAssign(st):
+    return assign.parse(st)
+
+def parseMatch(st):
+    return match.parse(st)
+
+def parseDest(st):
+    return dest.parse(st)

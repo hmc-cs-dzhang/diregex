@@ -1,31 +1,41 @@
-from diregex_semantics import match
-from parsec_parser import parse
-from diregex_subst import updateEnv
-from diregex_tree_producer import produceDirTree
+import sys
+sys.path.append("../semantics")
+
 import os
+import io
+from matcher import match
+from subst import updateEnv
+from tree_producer import produceDirTree
+from semantics import run
+
+
 
 def main():
+    path = '../../test/testdir4'
+    os.chdir(path)
+    if 'src' not in [p.name for p in os.scandir()]:
+        os.mkdir('src')
+    if 'test' not in [p.name for p in os.scandir()]:
+        os.mkdir('test')
 
-    os.chdir('../test/testdir4')
-    os.mkdir('src')
-    os.mkdir('test')
-    open('src/foo.cpp').close()
-    open('test/foo_test.cpp').close()
+    open('src/foo.cpp', 'a').close()
+    open('test/foo_test.cpp', 'a').close()
 
-    program = r'''
-        srcfile = <pat=*>.cpp
+    program = r'''srcfile = f*.cpp
+testfile = fo?_test.cpp
+match (src/{srcfile}, test/{testfile})
+dest foo/({srcfile}, {testfile})'''
+
+    run(program)
+
+
+main()
+
+
+
+'''
+srcfile = <pat=*>.cpp
         testfile = <\pat>_test.cpp
         match (src/{srcfile}, test/{testfile})
         dest <\pat>/({srcfile}, {testfile})
-        '''
-
-    ast = parse(program)
-
-    env = updateEnv(ast.stmts[0])
-    env = updateEnv(ast.stmts[1], env)
-
-    matches = match(ast.stmts[2], path, env)
-    for match in matches:
-        produceDirTree(ast.stmts[3], path, env)
-
-main()
+'''
