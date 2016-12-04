@@ -65,7 +65,7 @@ def test2():
 
     checkEmpty()
 
-
+@with_setup(setup, teardown)
 def test3():
     """ same set-up as above, but uses more variable naming as alternate syntax"""
     os.mkdir("src")
@@ -92,6 +92,7 @@ def test3():
     os.remove('bar/bar.cpp')
     os.remove('bar/bar_test.cpp')
     os.rmdir('bar')
+
 
 def test4():
     """ does the opposite of the above test """

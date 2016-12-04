@@ -9,6 +9,7 @@ from tree_producer import produceDirTree
 from parser import parse, parseAssign, parseMatch, parseDest
 from ir import *
 from regex_env import RegexEnv
+from var_finder import findVars
 
 
 def run(program):
@@ -33,7 +34,11 @@ def run(program):
             if not type(dest) is Dest:
                 raise TypeError("Match must be followed by a Dest")
 
-            for newVars, newRegex in match(stmt.tree, path, varEnv, regexEnv):
+            # traverse the destination tree to see specifically what
+            # variables we need to match with
+            usedVars = findVars(dest.tree, varEnv)
+
+            for newVars, newRegex in match(stmt.tree, path, usedVars, varEnv, regexEnv):
                 produceDirTree(dest.tree, path, newVars, newRegex)
 
             break

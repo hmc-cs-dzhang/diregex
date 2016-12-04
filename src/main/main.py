@@ -30,6 +30,7 @@ def main():
     program = r'''
     srcfile = <pat=*>.cpp
     testfile = <\pat>_test.cpp
+    div = this/is*a.diversion
     match (src/{srcfile}, test/{testfile})
     dest <\pat>/({srcfile}, {testfile})
     '''
