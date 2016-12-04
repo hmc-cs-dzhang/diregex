@@ -4,6 +4,8 @@ sys.path.insert(0, "../parser")
 
 from ir import *
 from parser import parse
+from pattern_parser import parsePattern
+
 from copy import deepcopy
 
 
@@ -13,62 +15,70 @@ class Subst(object):
     with new named nodes
     '''
 
-    def visit(self, node, env):
+    def visit(self, node, varEnv, regexEnv):
         method_name = 'visit_' + type(node).__name__
         visitor = getattr(self, method_name, self.generic_visit)
-        return visitor(node, env)
+        return visitor(node, varEnv, regexEnv)
 
-    def generic_visit(self, node, currDir):
+    def generic_visit(self, node, *_):
         raise Exception('No visit_{} method'.format(type(node).__name__))
 
-    def visit_TreePatternDir(self, node, env):
-        ''' Go through the tree, vars with items in the environment '''
-        self.visit(node.dirItem, env)
+    def visit_TreePatternDir(self, node, varEnv, regexEnv):
+        ''' Go through the tree, vars with items in the var environment '''
+        self.visit(node.dirItem, varEnv, regexEnv)
         if node.var:
-            env.update({node.var: node})
+            varEnv.update({node.var: node})
 
-    def visit_TreePatternChild(self, node, env):
-        self.visit(node.treePattern, env)
-        self.visit(node.dirItem, env)
+    def visit_TreePatternChild(self, node, varEnv, regexEnv):
+        self.visit(node.treePattern, varEnv, regexEnv)
+        self.visit(node.dirItem, varEnv, regexEnv)
         if node.var:
-            env.update({node.var: node})
+            varEnv.update({node.var: node})
 
-    def visit_TreePatternList(self, node, env):
+    def visit_TreePatternList(self, node, varEnv, regexEnv):
 
         for tpat in node.treePatterns:
-            # visit each child, which will update the environment
-            self.visit(tpat, env)
+            # visit each child, which will update the varEnvironment
+            self.visit(tpat, varEnv, regexEnv)
 
         if node.var:
-            env.update({node.var: node})
+            varEnv.update({node.var: node})
 
-    def visit_TreePatternDesc(self, node, env):
-        self.visit(node.treePattern, env)
+    def visit_TreePatternDesc(self, node, varEnv, regexEnv):
+        self.visit(node.treePattern, varEnv, regexEnv)
         if node.var:
-            env.update({node.var, node})
+            varEnv.update({node.var, node})
 
-    def visit_TreePatternVar(self, node, env):
+    def visit_TreePatternVar(self, node, varEnv, regexEnv):
         var = node.var
-        if not var in env:
+        if not var in varEnv:
             raise Exception("variable %s has not been declared" % var)
         else:
-            return env[var], env
+            return varEnv[var], varEnv
 
 
     ############## Visiting DirItems ######################
 
-    def visit_DirGlob(self, dirItem, env):
-        #todo: update a regex env
-        pass
+    def visit_DirGlob(self, dirItem, _, regexEnv):
+        for name, pat in parsePattern(dirItem.glob):
+            if name in regexEnv:
+                raise KeyError("pattern name '%s' already exists" % name)
+            print("named pattern is, %s: %s" % (name, pat))
+            regexEnv[name] = pat
 
-def updateEnv(node, env = None):
+
+
+def updateEnv(node, varEnv=None, regexEnv=None):
     subst = Subst()
 
-    if not env:
-        env = {}
+    if not varEnv:
+        varEnv = {}
 
-    subst.visit(node, env)
-    return env
+    if not regexEnv:
+        regexEnv = {}
+
+    subst.visit(node, varEnv, regexEnv)
+    return varEnv
 '''
 def test():
     subst = Subst()

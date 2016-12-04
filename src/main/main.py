@@ -21,10 +21,14 @@ def main():
     open('src/foo.cpp', 'a').close()
     open('test/foo_test.cpp', 'a').close()
 
-    program = r'''srcfile = f*.cpp
-testfile = fo?_test.cpp
-match (src/{srcfile}, test/{testfile})
-dest foo/({srcfile}, {testfile})'''
+    program = r'''
+    srcfile = <pat=*>.cpp
+    testfile = <\pat>_test.cpp
+    '''
+    '''
+    match (src/{srcfile}, test/{testfile})
+    dest foo/({srcfile}, {testfile})
+    '''
 
     run(program)
 

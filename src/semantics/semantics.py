@@ -16,7 +16,8 @@ def isAssign(line):
 def run(program):
 
     path = "../../test/testdir4"
-    env = {}
+    varEnv = {}
+    regexEnv = {}
 
     stmts = parse(program).stmts
     i = 0
@@ -25,7 +26,7 @@ def run(program):
 
         # Read in assignments, and add them to the environment
         if type(stmt) is Assign:
-            env = updateEnv(stmt.tree, env)
+            varEnv = updateEnv(stmt.tree, varEnv, regexEnv)
 
         # Once we hit a match, iterate through all the matches, and
         # perform the action specified in the destination tree
@@ -34,7 +35,7 @@ def run(program):
             if not type(dest) is Dest:
                 raise TypeError("Match must be followed by a Dest")
 
-            for m in match(stmt.tree, path, env):
+            for m in match(stmt.tree, path, varEnv):
                 produceDirTree(dest.tree, path, m)
 
             break
