@@ -8,13 +8,14 @@ from subst import updateEnv
 from tree_producer import produceDirTree
 from parser import parse, parseAssign, parseMatch, parseDest
 from ir import *
+from regex_env import RegexEnv
 
 
 def run(program):
 
     path = "../../test/testdir4"
     varEnv = {}
-    regexEnv = {}
+    regexEnv = RegexEnv()
 
     stmts = parse(program).stmts
     i = 0
@@ -32,8 +33,8 @@ def run(program):
             if not type(dest) is Dest:
                 raise TypeError("Match must be followed by a Dest")
 
-            for m in match(stmt.tree, path, varEnv):
-                produceDirTree(dest.tree, path, m)
+            for newVars, newRegex in match(stmt.tree, path, varEnv, regexEnv):
+                produceDirTree(dest.tree, path, newVars, newRegex)
 
             break
 

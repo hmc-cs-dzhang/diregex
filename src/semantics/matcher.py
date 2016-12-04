@@ -149,21 +149,23 @@ class Matcher(NodeVisitor):
                 newPath = os.path.join(path, dirItem.name)
                 yield newPath, newRegexEnv
 
-def match(tree, path, varEnv = None):
+def match(tree, path, varEnv=None, regexEnv=None):
     if not varEnv:
         varEnv = {}
 
+    if not regexEnv:
+        regexEnv = RegexEnv()
+
     matcher = Matcher()
-    regexEnv = RegexEnv()
     matches = matcher.visit(tree, path, varEnv, regexEnv)
 
     varEnvs = []
 
-    for newVarEnv, _ in matches:
+    for newVarEnv, newRegexEnv in matches:
         # don't print duplicates
         if newEnv(newVarEnv, varEnvs):
             varEnvs += [newVarEnv]
-            yield newVarEnv
+            yield newVarEnv, newRegexEnv
 
 def newEnv(varEnv, varEnvs):
     for otherVarEnv in varEnvs:

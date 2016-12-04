@@ -59,10 +59,10 @@ class Subst(object):
     def visit_DirGlob(self, dirItem, _, regexEnv):
         for name, pat in parsePattern(dirItem.glob):
 
-            if name in regexEnv:
+            if name in regexEnv.groupdict:
                 raise KeyError("pattern name '%s' already exists" % name)
 
-            regexEnv[name] = pat
+            regexEnv.groupdict[name] = pat
 
 
 

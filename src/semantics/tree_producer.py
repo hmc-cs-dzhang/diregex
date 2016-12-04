@@ -2,40 +2,43 @@ import os
 import shutil
 from matcher import *
 from ir import *
+from regex_env import RegexEnv
 
 class Producer(object):
 
-    def visit(self, node, path, env):
+    def visit(self, node, path, varEnv, regexEnv):
         method_name = 'visit_' + type(node).__name__
         visitor = getattr(self, method_name, self.generic_visit)
-        return visitor(node, path, env)
+        return visitor(node, path, varEnv, regexEnv)
 
-    def generic_visit(self, node, path, env):
+    def generic_visit(self, node, path, varEnv, regexEnv):
         raise Exception('No visit_{} method'.format(type(node).__name__))
 
-    def visit_TreePatternDir(self, node, path, env):
-        return self.visit(node.dirItem, path, env)
+    def visit_TreePatternDir(self, node, path, varEnv, regexEnv):
+        return self.visit(node.dirItem, path, varEnv, regexEnv)
 
-    def visit_TreePatternChild(self, node, path, env):
-        newPath = self.visit(node.dirItem, path, env)
-        return self.visit(node.treePattern, newPath, env)
+    def visit_TreePatternChild(self, node, path, varEnv, regexEnv):
+        newPath = self.visit(node.dirItem, path, varEnv, regexEnv)
+        return self.visit(node.treePattern, newPath, varEnv, regexEnv)
 
-    def visit_TreePatternList(self, node, path, env):
+    def visit_TreePatternList(self, node, path, varEnv, regexEnv):
         for treePattern in node.treePatterns:
-            self.visit(treePattern, path, env)
+            self.visit(treePattern, path, varEnv, regexEnv)
         return path
 
-    def visit_TreePatternVar(self, node, path, env):
+    def visit_TreePatternVar(self, node, path, varEnv, regexEnv):
         var = node.var
-        if var in env:
+        if var in varEnv:
             # move whatever the old file to the current location
-            shutil.move(env[var], path)
-            return env[var]
+            shutil.move(varEnv[var], path)
+            return varEnv[var]
         else:
             raise Exception("Variable '%s' does not exist" % var)
 
-    def visit_DirName(self, node, path, env):
-        name = node.name
+    def visit_DirName(self, node, path, varEnv, regexEnv):
+
+        name = regexEnv.replaceBackreferences(RegexEnv.translateOnlyBackrefs(node.name))
+
         if name in os.listdir(path):
             print("directory " + name + " already exists")
         else:
@@ -45,11 +48,14 @@ class Producer(object):
 
 
 
-def produceDirTree(tree, path, env=None):
-    if not env:
-        env = {}
+def produceDirTree(tree, path, varEnv=None, regexEnv=None):
+    if not varEnv:
+        varEnv = {}
+
+    if not regexEnv:
+        regexEnv = RegexEnv()
 
     producer = Producer()
 
-    producer.visit(tree, path, env)
+    producer.visit(tree, path, varEnv, regexEnv)
 

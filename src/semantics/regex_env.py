@@ -142,6 +142,28 @@ class RegexEnv(object):
         name = '(?P=%s)' % name
         return name, i
 
+    def translateOnlyBackrefs(pat):
+        """ Used in tree_producer, only replaces backreferences, and keeps
+        the rest of the directory name the same """
+        i, n = 0, len(pat)
+        res = ''
+        while i < n:
+            c = pat[i]
+            i = i+1
+            if c == '<':
+                name, i = RegexEnv.translateName(pat, i)
+                res += name
+            elif c == '>':
+                res += ')'
+            elif c == '\\':
+                name, i = RegexEnv.translateBackRef(pat, i)
+                res += name
+            elif c.isalnum() or c == '_':
+                res += c
+            else:
+                raise Exception("Unrecognized character '%s'" % c)
+        return res
+
     def translate(pat):
         """
         Translate a shell PATTERN to a regular expression. There is no way to
