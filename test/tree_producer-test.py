@@ -91,6 +91,16 @@ def testVar():
 
     os.remove("src/newfile.cpp")
     os.rmdir("src")
+
+def testProduceFile():
+
+    tree = TreePatternDir(DirName("testfile.txt", 'file'))
+    produceDirTree(tree, testPath)
+
+    os.remove("testfile.txt")
+
+
+
 '''
 def testManyVars():
     """

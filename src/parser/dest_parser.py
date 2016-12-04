@@ -18,12 +18,31 @@ from parsec import *
 <dir-name> : DIRNAME
 '''
 
-
 @generate
 def dirName():
     '''Parse a directory name'''
     globname = yield dirname
     return DirName(globname)
+
+@generate
+def dirFile():
+    ''' Parse a dirItem marked as a file '''
+    file = yield file_tok >> colon >> dirName
+    file.attr = 'file'
+    return file
+
+@generate
+def dirDir():
+    ''' Parse a dirItem marked as a directory '''
+    directory = yield dir_tok >> colon >> dirName
+    directory.attr = 'dir'
+    return directory
+
+@generate
+def dirItem():
+    '''Parse a directory name'''
+    dItem = yield dirFile ^ dirDir ^ dirName
+    return dItem
 
 @generate
 def treePatternList():
@@ -34,13 +53,13 @@ def treePatternList():
 @generate
 def treePatternDir():
     ''' parse a trivial treePattern'''
-    dName = yield dirName
+    dName = yield dirItem
     return TreePatternDir(dName)
 
 @generate
 def treePatternChild():
     ''' parse a tree pattern with children '''
-    parent = yield dirName
+    parent = yield dirItem
     children = yield slash >> destTreePattern
     return TreePatternChild(parent, children)
 

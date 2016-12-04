@@ -158,7 +158,7 @@ class RegexEnv(object):
             elif c == '\\':
                 name, i = RegexEnv.translateBackRef(pat, i)
                 res += name
-            elif c.isalnum() or c == '_':
+            elif c.isalnum() or c == '_' or c == '.':
                 res += c
             else:
                 raise Exception("Unrecognized character '%s'" % c)

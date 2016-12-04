@@ -178,7 +178,7 @@ def newEnv(varEnv, varEnvs):
             return False
     return True
 
-def allMatches(tree, path, namedVars, varEnv = None):
+def allMatches(tree, path, namedVars, varEnv=None):
     if not varEnv:
         varEnv = {}
 

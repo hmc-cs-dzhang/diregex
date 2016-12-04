@@ -16,11 +16,14 @@ lt         = lexeme(string('<'))
 comma      = lexeme(string(','))
 backslash  = lexeme(string('\\'))
 stars      = lexeme(string('**'))
+colon      = lexeme(string(':'))
 eof        = lexeme(regex(r'$'))
 
 # todo: should be keywords: shouldn't parse something like 'matchhi'
 match_tok  = lexeme(string('match'))
 dest_tok   = lexeme(string('dest'))
+file_tok   = lexeme(string('file'))
+dir_tok    = lexeme(string('dir'))
 
 globExpr    = r'[A-Za-z0-9_\*\?\[\]\-\.]+'
 identExpr   = r'[A-Za-z_][A-Za-z_0-9]+'       # same as Python's identifiers

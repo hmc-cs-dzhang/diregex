@@ -127,13 +127,14 @@ def testVarMatchDest():
                 DirName(r'<\pat>'),
                 TreePatternList([
                     TreePatternVar("srcfile"),
-                    TreePatternVar("testfile")])))])
+                    TreePatternVar("testfile"),
+                    TreePatternDir(DirName("README.txt", 'file'))])))])
 
     bst = parse(r'''
         srcfile = <pat=*>.cpp
         testfile = <\pat>_test.cpp
         match (src/{srcfile}, test/{testfile})
-        dest <\pat>/({srcfile}, {testfile})
+        dest <\pat>/({srcfile}, {testfile}, file:README.txt)
         ''')
 
     eq_(ast,bst)

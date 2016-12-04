@@ -10,11 +10,7 @@ class Node(object):
 
     def __eq__(self, other):
         return self.__dict__ == other.__dict__
-    '''
-    def __repr__(self):
-        import pprint
-        return pprint.pprint(self)
-    '''
+
     def __repr__(self):
         return self.prettyPrint(0)
 
@@ -97,15 +93,17 @@ class DirItem(Node):
     pass
 
 class DirGlob(DirItem):
-    def __init__(self, glob):
+    def __init__(self, glob, attr=None):
         self.glob = glob
+        self.attr = attr
 
     def __repr__(self):
         return "DirGlob(%s)" % self.glob
 
 class DirName(DirItem):
-    def __init__(self, name):
+    def __init__(self, name, attr=None):
         self.name = name
+        self.attr = attr
 
     def __repr__(self):
         return "DirName(%s)" % self.name

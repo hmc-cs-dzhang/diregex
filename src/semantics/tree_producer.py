@@ -50,7 +50,14 @@ class Producer(object):
         if name in os.listdir(path):
             print("directory " + name + " already exists")
         else:
-            os.mkdir(os.path.join(path, name))
+            # create a new directory
+            if not node.attr or node.attr == 'dir':
+                os.mkdir(os.path.join(path, name))
+
+            # create a new file
+            elif node.attr == 'file':
+                newFilePath = os.path.join(path, name)
+                open(newFilePath, 'a').close()
 
         return os.path.join(path, name)
 

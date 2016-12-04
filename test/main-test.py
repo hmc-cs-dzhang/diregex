@@ -7,8 +7,9 @@ from semantics import run
 os.chdir('../test/testdir4')
 
 def checkEmpty(directory="./"):
+    dirItems = os.listdir(directory)
     if os.listdir(directory) != []:
-        assert False, "directory was not empty"
+        assert False, "directory was not empty, contained " + str(dirItems)
 
 def setup():
     """ run before each test to clean out the directory """
@@ -127,5 +128,36 @@ def test4():
     os.remove('dummy/dummy1.cpp')
     os.remove('dummy/dummy_test.cpp')
     os.rmdir('dummy')
+
+@with_setup(setup, teardown)
+def test5():
+    """ same as test3, but uses the 'file' attribute to create a README.txt"""
+    os.mkdir("src")
+    open('src/foo.cpp' ,'a').close()
+    open('src/bar.cpp' ,'a').close()
+
+    os.mkdir("test")
+    open('test/foo_test.cpp', 'a').close()
+    open('test/bar_test.cpp', 'a').close()
+
+    prog = r"""
+    srcfile = <pat=*>.cpp
+    testfile = <\pat>_test.cpp
+    match (src/{srcfile}, test/{testfile})
+    dest <\pat>/({srcfile}, {testfile}, file:README.txt)
+    """
+
+    run(prog)
+
+    os.remove('foo/foo.cpp')
+    os.remove('foo/foo_test.cpp')
+    os.remove('foo/README.txt')
+    os.rmdir('foo')
+
+    os.remove('bar/bar.cpp')
+    os.remove('bar/bar_test.cpp')
+    os.remove('bar/README.txt')
+    os.rmdir('bar')
+
 
 
