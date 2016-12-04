@@ -85,21 +85,21 @@ def testNamedGlob1():
     a very contrived example, that tests backreferencing to previous patterns
     and the same pattern with names
     '''
-    patterns = [r'<p1:hey*>.c', r'<p2:hi*>\p1\p2.h']
+    patterns = [r'<p1=hey*>.c', r'<p2=hi*>\p1\p2.h']
     strings = ['heyo.c', 'hiThereheyohiThere.h']
     regexEnv = RegexEnv.matchAll(patterns, strings)
 
     eq_(regexEnv.groups, ['heyo', 'hiThere'])
 
 def testNamedGlob2():
-    patterns = ['<name:c*[1-5]>.h', r'\name']
+    patterns = ['<name=c*[1-5]>.h', r'\name']
     strings = ['carrot4.h', 'carrot4']
     regexEnv = RegexEnv.matchAll(patterns, strings)
 
     eq_(regexEnv.groups, ['carrot4'])
 
 def testNamedGlob3():
-    patterns = ['<pat:child*>.h', r'<\pat>.cpp']
+    patterns = ['<pat=child*>.h', r'<\pat>.cpp']
     strings = ['child1.h', 'child1.cpp']
     regexEnv = RegexEnv.matchAll(patterns, strings)
 

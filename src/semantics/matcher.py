@@ -178,7 +178,7 @@ def allMatches(tree, path, varEnv = None):
         varEnv = {}
 
     matchList = []
-    for varEnv in match(tree, path, varEnv):
+    for varEnv, _ in match(tree, path, varEnv):
         baseVarEnv = {v: os.path.basename(p) for v, p in varEnv.items()}
         matchList.append(baseVarEnv)
         '''

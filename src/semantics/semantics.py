@@ -60,7 +60,6 @@ class Interpreter(object):
     def visit_Prog(self, node, path, env):
         for stmt in node.stmts:
             env = self.visit(stmt, path, env)
-            #print(env)
         return env
 
     def visit_Match(self, node, path, env):
