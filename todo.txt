@@ -1,23 +1,18 @@
 ## List of things to do for my DSL
 
 ####  Priorities (in no particular order)
-1. Don't print duplicates
-    * Stop looking if found a match, and descendants have no named variables
-1. Add readable option (truncate pathnames)
-    * Added it to the semantics, now I need to add to language
-1. Optimize searcher so that it's not searching multiple things
-1. Indicate if no matches
+1. Add dest trees parameterized on lists, rather than matches
+2. Improve shell options
+3. Refer to ast variables in dest trees
+4. Add renaming syntax {file.txt -> newfile.txt}, for example
+5. Bug with generators not restarting if one of the matched files was moved
+6. --dry-run option
 1. If user didn't specify a variable, should it return the top node?
 
 
 
 #### Deprioritized
 1. Specify number of descendants
-1. Name variables that you can use in an expression
 3. Add interactive ability (to look for next match, terminate, etc)
-4. Semantics tests, which involves equating lists of dictionaries
-    * In tests, don't check order of results
 5. Make regex option, default to non-regex
-1. Add isFile token
-2. Alternate syntax for reorganizing files
 3. Be able to deal with filenames with many words/symbols
