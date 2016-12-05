@@ -8,7 +8,7 @@
 5. Bug with generators not restarting if one of the matched files was moved
 6. --dry-run option
 1. If user didn't specify a variable, should it return the top node?
-
+1. Make sure it's a valid program (e.g. all variables refer to something) before running it
 
 
 #### Deprioritized

@@ -41,7 +41,7 @@ class Producer(object):
 
             return varEnv[var]
         else:
-            raise Exception("Variable '%s' does not exist" % var)
+            raise FooError("Variable '%s' does not exist" % var)
 
     def visit_DirName(self, node, path, varEnv, regexEnv):
 
@@ -73,4 +73,9 @@ def produceDirTree(tree, path, varEnv=None, regexEnv=None):
     producer = Producer()
 
     producer.visit(tree, path, varEnv, regexEnv)
+
+class FooError(Exception):
+
+    def __init__(self, err):
+        self.err = err
 

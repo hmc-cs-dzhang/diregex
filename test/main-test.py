@@ -251,6 +251,21 @@ def test9():
     move many files up a directory.  Inspired by:
     http://stackoverflow.com/questions/35554875/iterate-over-folders-and-move-files-up-one-level
     """
+
+    setupProg = r"""
+        dest (
+            1/.temp/(
+                file:image1.png,
+                file:image2.png,
+                file:image3.png),
+            2/.temp/(
+                file:image1.png,
+                file:image2.png,
+                file:image3.png))
+    """
+    run(setupProg)
+
+    """
     os.mkdir('1')
     os.mkdir('1/.temp')
     open('1/.temp/image1.png', 'a')
@@ -262,17 +277,15 @@ def test9():
     open('2/.temp/image1.png', 'a')
     open('2/.temp/image2.png', 'a')
     open('2/.temp/image3.png', 'a')
+    """
+
 
     prog = r"""
     match <fldr=[0-9]>/.temp/img=image[0-9].png
     dest <\fldr>/{img}
     """
 
-    input('hold up')
-
     run(prog)
-
-    input('wait')
 
     os.remove('1/image1.png')
     os.remove('1/image2.png')
@@ -285,12 +298,13 @@ def test9():
     os.rmdir('2')
 
 @with_setup(setup, teardown)
-def test9():
+def test10():
     """
     Search for PDFs matching their corresponding signed PDFS,
     move them into the same directory.  Inspired by
     http://stackoverflow.com/questions/15438347/find-match-variable-filenames-and-move-files-to-respective-directory
     """
+    '''
     os.mkdir('signed')
     open('signed/PDF1_signed.pdf', 'a')
     open('signed/PDF2_signed.pdf', 'a')
@@ -305,12 +319,35 @@ def test9():
     os.mkdir('top_level/next/deep')
     open('top_level/next/deep/PDF3.pdf', 'a')
     open('top_level/next/deep/PDF4.pdf', 'a')
+    '''
+    # Use the DSL to create a sample directory
+    prog1 = r"""
+        dest (
+            signed/(
+                file:PDF1_signed.pdf,
+                file:PDF2_signed.pdf,
+                file:PDF3_signed.pdf),
+
+            top_level/(
+                file:PDF1.pdf,
+                next/(
+                     file:PDF2.pdf,
+                     deep/(
+                        file:PDF3.pdf,
+                        file:PDF4.pdf))))
+    """
+
+    run(prog1)
+
 
     prog = r"""
     match (signed/<name=PDF[0-9]>_signed.pdf,
             **/pdf=<\name>.pdf)
     dest signed/{pdf}
     """
+
+
+
     run(prog)
 
     os.remove('signed/PDF1_signed.pdf')

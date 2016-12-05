@@ -5,7 +5,7 @@ import os
 import io
 from matcher import match
 from subst import updateEnv
-from tree_producer import produceDirTree
+from tree_producer import produceDirTree, FooError
 from semantics import run
 
 
@@ -34,8 +34,11 @@ def main():
     match (src/{srcfile}, test/{testfile})
     dest <\pat>/({srcfile}, {testfile})
     '''
-
-    run(program)
+    try:
+        run(program)
+    except FootError as err:
+        print("you done messed up")
+        print(err)
 
 
 
