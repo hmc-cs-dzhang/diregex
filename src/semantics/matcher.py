@@ -176,11 +176,18 @@ def match(tree, path, varsUsed, varEnv=None, regexEnv=None):
 
     varEnvs = []
 
+    atLeastOneMatch = False
+
     for newVarEnv, newRegexEnv in matches:
+        atLeastOneMatch = True
+
         # don't print duplicates
         if newEnv(newVarEnv, varEnvs):
             varEnvs += [newVarEnv]
             yield newVarEnv, newRegexEnv
+
+    if not atLeastOneMatch:
+        print("No matches found")
 
 def newEnv(varEnv, varEnvs):
     for otherVarEnv in varEnvs:

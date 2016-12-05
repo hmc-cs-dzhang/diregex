@@ -40,7 +40,6 @@ def run(program):
 
             for newVars, newRegex in match(stmt.tree, path, usedVars, varEnv, regexEnv):
                 produceDirTree(dest.tree, path, newVars, newRegex)
-
             break
 
         elif type(stmt) is Dest:
