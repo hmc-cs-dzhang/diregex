@@ -150,9 +150,19 @@ class Matcher(NodeVisitor):
         '''
         for dirItem in os.scandir(path):
             newRegexEnv = regexEnv.match(node.glob, dirItem.name)
-            if newRegexEnv: # got a match, return the updated regex env
+            if newRegexEnv and attributeMatches(node, dirItem): # got a match, return the updated regex env
+
                 newPath = os.path.join(path, dirItem.name)
                 yield newPath, newRegexEnv
+
+def attributeMatches(dirGlob, dirEntry):
+    """ checks to see if a dirGlob's optional attribute field matches the type
+    of file (e.g. file, dir) """
+    if dirGlob.attr == 'dir':
+        return os.path.isdir(dirEntry.path)
+    elif dirGlob.attr == 'file':
+        return os.path.isfile(dirEntry.path)
+    return True
 
 def match(tree, path, varsUsed, varEnv=None, regexEnv=None):
     if not varEnv:

@@ -75,6 +75,28 @@ def testVar():
     bst = parse(r'dest foo/{var}')
     eq_(ast, bst)
 
+def testAttrs():
+    ast = Prog([
+        Match(
+            TreePatternList([
+                TreePatternChild(
+                    DirGlob("par"),
+                    TreePatternDir(
+                        DirGlob('d*?', 'dir'))),
+                TreePatternDir(
+                    DirGlob('s*', 'file'))])),
+        Dest(
+            TreePatternDir(
+                DirName('test.cpp', 'file')))])
+
+    bst = parse(r'''
+        match (par/dir:d*?, file:s*)
+        dest file:test.cpp
+        ''')
+    eq_(ast, bst)
+
+
+
 def testMatchDest():
     ''' parses a program with src and dest trees '''
     ast = Prog([

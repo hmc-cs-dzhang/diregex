@@ -21,8 +21,8 @@ from parsec import *
 @generate
 def dirName():
     '''Parse a directory name'''
-    globname = yield dirname
-    return DirName(globname)
+    name = yield dirname
+    return DirName(name)
 
 @generate
 def dirFile():

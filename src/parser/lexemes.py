@@ -26,7 +26,7 @@ file_tok   = lexeme(string('file'))
 dir_tok    = lexeme(string('dir'))
 
 globExpr    = r'[A-Za-z0-9_\*\?\[\]\-\.]+'
-identExpr   = r'[A-Za-z_][A-Za-z_0-9]+'       # same as Python's identifiers
+identExpr   = r'[A-Za-z_][A-Za-z_0-9]*'       # same as Python's identifiers
 dirnameExpr = r'[A-Za-z0-9_\.]+'       # todo: expand to allow more dirnames
 
 ident   = lexeme(regex(identExpr))

@@ -19,7 +19,7 @@ def setup():
 
 def teardown():
     """ run after each test to make sure there was nothing else in the dir"""
-    checkEmpty()
+    #checkEmpty()
 
 
 '''
@@ -159,5 +159,30 @@ def test5():
     os.remove('bar/README.txt')
     os.rmdir('bar')
 
+
+@with_setup(setup, teardown)
+def test6():
+    """ only moves files, not folders """
+
+    # creates folder1/(hey.txt, hi.txt, dont_move)
+    os.mkdir("folder1")
+    open('folder1/hey.txt', 'a').close()
+    open('folder1/hi.txt', 'a').close()
+    os.mkdir('folder1/dont_move')
+
+    os.mkdir("folder2")
+
+    prog = r"""
+    match folder1/f=file:*
+    dest folder2/{f}
+    """
+    # should move hey and hi into folder2, but keep dont_move in folder1
+    run(prog)
+
+    os.remove('folder2/hey.txt')
+    os.remove('folder2/hi.txt')
+    os.rmdir('folder2')
+
+    os.removedirs('folder1/dont_move')
 
 
