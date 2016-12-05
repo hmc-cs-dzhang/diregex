@@ -19,7 +19,7 @@ def setup():
 
 def teardown():
     """ run after each test to make sure there was nothing else in the dir"""
-    #checkEmpty()
+    checkEmpty()
 
 
 @with_setup(setup, teardown)
@@ -48,7 +48,8 @@ def test2():
     open('test/bar_test.cpp', 'a').close()
 
     prog = r"""
-    match (src/srcfile=<pat=*>.cpp, test/testfile=<\pat>_test.cpp)
+    match (src/srcfile=<pat=*>.cpp,
+           test/testfile=<\pat>_test.cpp)
     dest <\pat>/({srcfile}, {testfile})
 
     """
@@ -110,7 +111,9 @@ def test4():
     open('dummy/dummy_test.cpp', 'a').close()
 
     prog = r"""
-    match <pat=*>/(srcfile=<\pat>.cpp, testfile=<\pat>_test.cpp)
+    match <pat=*>/(
+            srcfile=<\pat>.cpp,
+            testfile=<\pat>_test.cpp)
     dest (src/{srcfile}, test/{testfile})
     """
 
@@ -184,4 +187,140 @@ def test6():
 
     os.removedirs('folder1/dont_move')
 
+@with_setup(setup, teardown)
+def test7():
+    """ move file to a subdirectory in the same folder """
+    os.mkdir("src")
+    open('src/foo.txt', 'a').close()
+    open('src/bar.txt', 'a').close()
 
+    prog = r"""
+    match src/f=file:<pat=*>.txt
+    dest src/<\pat>/{f}
+    """
+
+    run(prog)
+
+    os.remove('src/foo/foo.txt')
+    os.remove('src/bar/bar.txt')
+    os.rmdir('src/foo')
+    os.removedirs('src/bar')
+
+@with_setup(setup, teardown)
+def test8():
+    """
+    move files based on parsing tokens, based on
+    http://stackoverflow.com/questions/34297712/move-files-to-different-directories-based-on-file-name-tokens
+    """
+
+    open('DSLs_fall_2016.txt', 'a')
+    open('PLs_fall_2016.txt', 'a')
+    open('CS81_spring_2016.txt', 'a')
+    open('LinAl_spring_2016.txt', 'a')
+    open('STEMs_fall_2015.txt', 'a')
+
+    prog = r"""
+    match syllabus = <class=*>_<sem=*>_<year=[0-9]*>.txt
+    dest <\year>/<\sem>/<\class>/{syllabus}
+    """
+
+    run(prog)
+
+    os.remove('2016/fall/DSLs/DSLs_fall_2016.txt')
+    os.remove('2016/fall/PLs/PLs_fall_2016.txt')
+    os.remove('2016/spring/CS81/CS81_spring_2016.txt')
+    os.remove('2016/spring/LinAl/LinAl_spring_2016.txt')
+    os.remove('2015/fall/STEMs/STEMs_fall_2015.txt')
+
+    os.rmdir('2016/fall/DSLs')
+    os.rmdir('2016/fall/PLs')
+    os.rmdir('2016/spring/CS81')
+    os.rmdir('2016/spring/LinAl')
+    os.rmdir('2015/fall/STEMs')
+
+    os.rmdir('2016/fall')
+    os.rmdir('2016/spring')
+    os.rmdir('2015/fall')
+
+    os.rmdir('2016')
+    os.rmdir('2015')
+
+@with_setup(setup, teardown)
+def test9():
+    """
+    move many files up a directory.  Inspired by:
+    http://stackoverflow.com/questions/35554875/iterate-over-folders-and-move-files-up-one-level
+    """
+    os.mkdir('1')
+    os.mkdir('1/.temp')
+    open('1/.temp/image1.png', 'a')
+    open('1/.temp/image2.png', 'a')
+    open('1/.temp/image3.png', 'a')
+
+    os.mkdir('2')
+    os.mkdir('2/.temp')
+    open('2/.temp/image1.png', 'a')
+    open('2/.temp/image2.png', 'a')
+    open('2/.temp/image3.png', 'a')
+
+    prog = r"""
+    match <fldr=[0-9]>/.temp/img=image[0-9].png
+    dest <\fldr>/{img}
+    """
+
+    input('hold up')
+
+    run(prog)
+
+    input('wait')
+
+    os.remove('1/image1.png')
+    os.remove('1/image2.png')
+    os.remove('1/image3.png')
+    os.remove('2/image1.png')
+    os.remove('2/image2.png')
+    os.remove('2/image3.png')
+
+    os.rmdir('1')
+    os.rmdir('2')
+
+@with_setup(setup, teardown)
+def test9():
+    """
+    Search for PDFs matching their corresponding signed PDFS,
+    move them into the same directory.  Inspired by
+    http://stackoverflow.com/questions/15438347/find-match-variable-filenames-and-move-files-to-respective-directory
+    """
+    os.mkdir('signed')
+    open('signed/PDF1_signed.pdf', 'a')
+    open('signed/PDF2_signed.pdf', 'a')
+    open('signed/PDF3_signed.pdf', 'a')
+
+    os.mkdir('top_level')
+    open('top_level/PDF1.pdf', 'a')
+
+    os.mkdir('top_level/next')
+    open('top_level/next/PDF2.pdf', 'a')
+
+    os.mkdir('top_level/next/deep')
+    open('top_level/next/deep/PDF3.pdf', 'a')
+    open('top_level/next/deep/PDF4.pdf', 'a')
+
+    prog = r"""
+    match (signed/<name=PDF[0-9]>_signed.pdf,
+            **/pdf=<\name>.pdf)
+    dest signed/{pdf}
+    """
+    run(prog)
+
+    os.remove('signed/PDF1_signed.pdf')
+    os.remove('signed/PDF2_signed.pdf')
+    os.remove('signed/PDF3_signed.pdf')
+    os.remove('signed/PDF1.pdf')
+    os.remove('signed/PDF2.pdf')
+    os.remove('signed/PDF3.pdf')
+    os.rmdir('signed')
+
+    os.remove('top_level/next/deep/PDF4.pdf')
+
+    os.removedirs('top_level/next/deep')
