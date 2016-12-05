@@ -22,7 +22,7 @@ def teardown():
     #checkEmpty()
 
 
-'''
+@with_setup(setup, teardown)
 def testDest():
     """ script to create parent with two children folders """
     prog = r"""
@@ -33,8 +33,7 @@ def testDest():
     os.rmdir("parent/child2")
     os.removedirs("parent/child1")
 
-    checkEmpty()
-'''
+
 @with_setup(setup, teardown)
 def test2():
     """

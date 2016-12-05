@@ -76,6 +76,7 @@ def testVar():
     eq_(ast, bst)
 
 def testAttrs():
+    """ test 'file' and 'dir' attributes in match and dest """
     ast = Prog([
         Match(
             TreePatternList([
@@ -95,6 +96,22 @@ def testAttrs():
         ''')
     eq_(ast, bst)
 
+def testAttrs2():
+    """ test attributes in assignment statements """
+    ast = Prog([
+        Assign(
+            TreePatternChild(
+                DirGlob('par*', 'dir'),
+                TreePatternDir(
+                    DirGlob('chi*', 'file'),
+                    'src'),
+                'top'))])
+
+    bst = parse(r'''
+        top = dir:par*/src=file:chi*
+        ''')
+
+    eq_(ast, bst)
 
 
 def testMatchDest():

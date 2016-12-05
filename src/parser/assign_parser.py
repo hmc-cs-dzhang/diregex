@@ -30,6 +30,26 @@ def dirGlob():
     return DirGlob(globname)
 
 @generate
+def dirFile():
+    ''' Parse a dirItem marked as a file '''
+    file = yield file_tok >> colon >> dirGlob
+    file.attr = 'file'
+    return file
+
+@generate
+def dirDir():
+    ''' Parse a dirItem marked as a directory '''
+    directory = yield dir_tok >> colon >> dirGlob
+    directory.attr = 'dir'
+    return directory
+
+@generate
+def dirItem():
+    '''Parse a directory name'''
+    dItem = yield dirFile ^ dirDir ^ dirGlob
+    return dItem
+
+@generate
 def treePatternList():
     ''' parse a tree pattern'''
     pats = yield lparen >> sepBy(treePattern, comma) << rparen
@@ -38,13 +58,13 @@ def treePatternList():
 @generate
 def treePatternDir():
     ''' parse a trivial treePattern'''
-    dGlob = yield dirGlob
-    return TreePatternDir(dGlob)
+    dItem = yield dirItem
+    return TreePatternDir(dItem)
 
 @generate
 def treePatternChild():
     ''' parse a tree pattern with children '''
-    parent = yield dirGlob
+    parent = yield dirItem
     children = yield slash >> treePattern
     return TreePatternChild(parent, children)
 

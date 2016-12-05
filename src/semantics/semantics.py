@@ -44,7 +44,7 @@ def run(program):
             break
 
         elif type(stmt) is Dest:
-            raise TypeError("Dest must be preceded by Match")
+            produceDirTree(stmt.tree, path, varEnv, regexEnv)
 
         else:
             raise TypeError("Unknown type %s" % type(stmt).__name__)
