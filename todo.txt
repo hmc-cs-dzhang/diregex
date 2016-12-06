@@ -9,6 +9,7 @@
 6. --dry-run option
 1. If user didn't specify a variable, should it return the top node?
 1. Make sure it's a valid program (e.g. all variables refer to something) before running it
+2. Specify where the directory is!
 
 
 #### Deprioritized

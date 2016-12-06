@@ -92,7 +92,7 @@ def testAttrs():
 
     bst = parse(r'''
         match (par/dir:d*?, file:s*)
-        dest file:test.cpp
+        dest test.cpp
         ''')
     eq_(ast, bst)
 
@@ -166,13 +166,14 @@ def testVarMatchDest():
                 TreePatternList([
                     TreePatternVar("srcfile"),
                     TreePatternVar("testfile"),
-                    TreePatternDir(DirName("README.txt", 'file'))])))])
+                    TreePatternDir(DirName("README.txt", 'file')),
+                    TreePatternDir(DirName("docs", 'dir'))])))])
 
     bst = parse(r'''
         srcfile = <pat=*>.cpp
         testfile = <\pat>_test.cpp
         match (src/{srcfile}, test/{testfile})
-        dest <\pat>/({srcfile}, {testfile}, file:README.txt)
+        dest <\pat>/({srcfile}, {testfile}, README.txt, docs/)
         ''')
 
     eq_(ast,bst)

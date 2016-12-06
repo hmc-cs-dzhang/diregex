@@ -26,7 +26,7 @@ def teardown():
 def testDest():
     """ script to create parent with two children folders """
     prog = r"""
-    dest parent/(child1, child2)
+    dest parent/(child1/, child2/)
     """
 
     run(prog)
@@ -39,13 +39,17 @@ def test2():
     """
     See ideal syntax example 1
     """
-    os.mkdir("src")
-    open('src/foo.cpp' ,'a').close()
-    open('src/bar.cpp' ,'a').close()
 
-    os.mkdir("test")
-    open('test/foo_test.cpp', 'a').close()
-    open('test/bar_test.cpp', 'a').close()
+    setupProg = r"""
+    dest (src/(
+            foo.cpp,
+            bar.cpp),
+          test/(
+            foo_test.cpp,
+            bar_test.cpp))
+    """
+
+    run(setupProg)
 
     prog = r"""
     match (src/srcfile=<pat=*>.cpp,
@@ -69,13 +73,17 @@ def test2():
 @with_setup(setup, teardown)
 def test3():
     """ same set-up as above, but uses more variable naming as alternate syntax"""
-    os.mkdir("src")
-    open('src/foo.cpp' ,'a').close()
-    open('src/bar.cpp' ,'a').close()
 
-    os.mkdir("test")
-    open('test/foo_test.cpp', 'a').close()
-    open('test/bar_test.cpp', 'a').close()
+    setupProg = r"""
+    dest (src/(
+            foo.cpp,
+            bar.cpp),
+          test/(
+            foo_test.cpp,
+            bar_test.cpp))
+    """
+
+    run(setupProg)
 
     prog = r"""
     srcfile = <pat=*>.cpp
@@ -97,18 +105,14 @@ def test3():
 
 def test4():
     """ does the opposite of the above test """
-    os.mkdir("foo")
-    open('foo/foo.cpp', 'a').close()
-    open('foo/foo_test.cpp', 'a').close()
 
-    os.mkdir("bar")
-    open('bar/bar.cpp', 'a').close()
-    open('bar/bar_test.cpp', 'a').close()
-
-    # shouldn't copy dummy, since dummy1 doesn't match the pattern
-    os.mkdir("dummy")
-    open('dummy/dummy1.cpp', 'a').close()
-    open('dummy/dummy_test.cpp', 'a').close()
+    # should not match with the dummy variable
+    setupProg = r"""
+    dest (foo/(foo.cpp,foo_test.cpp),
+          bar/(bar.cpp,bar_test.cpp),
+          dummy/(dummy1.cpp,dummy_test.cpp))
+    """
+    run(setupProg)
 
     prog = r"""
     match <pat=*>/(
@@ -134,19 +138,19 @@ def test4():
 @with_setup(setup, teardown)
 def test5():
     """ same as test3, but uses the 'file' attribute to create a README.txt"""
-    os.mkdir("src")
-    open('src/foo.cpp' ,'a').close()
-    open('src/bar.cpp' ,'a').close()
 
-    os.mkdir("test")
-    open('test/foo_test.cpp', 'a').close()
-    open('test/bar_test.cpp', 'a').close()
+    setupProg = r"""
+    dest (src/(foo.cpp, bar.cpp),
+          test/(foo_test.cpp, bar_test.cpp))
+    """
+
+    run(setupProg)
 
     prog = r"""
     srcfile = <pat=*>.cpp
     testfile = <\pat>_test.cpp
     match (src/{srcfile}, test/{testfile})
-    dest <\pat>/({srcfile}, {testfile}, file:README.txt)
+    dest <\pat>/({srcfile}, {testfile}, README.txt)
     """
 
     run(prog)
@@ -255,30 +259,15 @@ def test9():
     setupProg = r"""
         dest (
             1/.temp/(
-                file:image1.png,
-                file:image2.png,
-                file:image3.png),
+                image1.png,
+                image2.png,
+                image3.png),
             2/.temp/(
-                file:image1.png,
-                file:image2.png,
-                file:image3.png))
+                image1.png,
+                image2.png,
+                image3.png))
     """
     run(setupProg)
-
-    """
-    os.mkdir('1')
-    os.mkdir('1/.temp')
-    open('1/.temp/image1.png', 'a')
-    open('1/.temp/image2.png', 'a')
-    open('1/.temp/image3.png', 'a')
-
-    os.mkdir('2')
-    os.mkdir('2/.temp')
-    open('2/.temp/image1.png', 'a')
-    open('2/.temp/image2.png', 'a')
-    open('2/.temp/image3.png', 'a')
-    """
-
 
     prog = r"""
     match <fldr=[0-9]>/.temp/img=image[0-9].png
@@ -304,49 +293,31 @@ def test10():
     move them into the same directory.  Inspired by
     http://stackoverflow.com/questions/15438347/find-match-variable-filenames-and-move-files-to-respective-directory
     """
-    '''
-    os.mkdir('signed')
-    open('signed/PDF1_signed.pdf', 'a')
-    open('signed/PDF2_signed.pdf', 'a')
-    open('signed/PDF3_signed.pdf', 'a')
 
-    os.mkdir('top_level')
-    open('top_level/PDF1.pdf', 'a')
-
-    os.mkdir('top_level/next')
-    open('top_level/next/PDF2.pdf', 'a')
-
-    os.mkdir('top_level/next/deep')
-    open('top_level/next/deep/PDF3.pdf', 'a')
-    open('top_level/next/deep/PDF4.pdf', 'a')
-    '''
     # Use the DSL to create a sample directory
     prog1 = r"""
         dest (
             signed/(
-                file:PDF1_signed.pdf,
-                file:PDF2_signed.pdf,
-                file:PDF3_signed.pdf),
+                PDF1_signed.pdf,
+                PDF2_signed.pdf,
+                PDF3_signed.pdf),
 
             top_level/(
-                file:PDF1.pdf,
+                PDF1.pdf,
                 next/(
-                     file:PDF2.pdf,
+                     PDF2.pdf,
                      deep/(
-                        file:PDF3.pdf,
-                        file:PDF4.pdf))))
+                        PDF3.pdf,
+                        PDF4.pdf))))
     """
 
     run(prog1)
-
 
     prog = r"""
     match (signed/<name=PDF[0-9]>_signed.pdf,
             **/pdf=<\name>.pdf)
     dest signed/{pdf}
     """
-
-
 
     run(prog)
 

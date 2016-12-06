@@ -51,9 +51,23 @@ def treePatternList():
     return TreePatternList(pats)
 
 @generate
+def treePatternDirWithoutSlash():
+    dName = yield dirItem
+    dName.attr = 'file'
+    return dName
+
+@generate
+def treePatternDirWithSlash():
+    dName = yield treePatternDirWithoutSlash << slash
+    #if dName.attr != 'file':
+    dName.attr = 'dir'
+    return dName
+
+
+@generate
 def treePatternDir():
     ''' parse a trivial treePattern'''
-    dName = yield dirItem
+    dName = yield treePatternDirWithSlash ^ treePatternDirWithoutSlash
     return TreePatternDir(dName)
 
 @generate

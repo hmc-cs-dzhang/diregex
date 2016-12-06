@@ -34,11 +34,8 @@ def main():
     match (src/{srcfile}, test/{testfile})
     dest <\pat>/({srcfile}, {testfile})
     '''
-    try:
-        run(program)
-    except FootError as err:
-        print("you done messed up")
-        print(err)
+
+    run(program)
 
 
 
