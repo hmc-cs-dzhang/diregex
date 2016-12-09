@@ -15,11 +15,10 @@ def main():
 
         prog += line + '\n'
 
-    path = os.path.dirname(os.path.realpath(__file__))
+    path = os.getcwd()
 
     semantics.run(prog, path)
 
 
 if __name__ == '__main__':
-    __package__ = 'src'
     main()

@@ -1,6 +1,3 @@
-import sys
-sys.path.append("../semantics")
-sys.path.append("../ir")
 import src
 
 from matcher import match
