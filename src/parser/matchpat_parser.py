@@ -1,6 +1,3 @@
-import sys
-sys.path.append('../ir')
-
 from lexemes import *
 from ir import *
 from parsec import *
@@ -16,5 +13,3 @@ def params():
     yield equals
     matches = yield lbrack >> sepBy(dirname, comma) << rbrack
     return Params(name, matches)
-
-print(matchPattern.parse(r'matchpat name = [joe, bob, timmy]'))

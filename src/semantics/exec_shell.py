@@ -1,10 +1,12 @@
+import src
+
 import re
 import os
 import functools
 
 from parser import parse
 from matcher import Matcher
-import ir
+from ir import *
 from regex_env import RegexEnv
 
 #os.chdir('../test/testdir3')

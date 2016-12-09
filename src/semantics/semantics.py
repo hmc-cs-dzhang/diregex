@@ -1,7 +1,7 @@
 import sys
 sys.path.append("../semantics")
 sys.path.append("../ir")
-sys.path.insert(0, "../parser")
+import src
 
 from matcher import match
 from subst import updateEnv
@@ -14,9 +14,8 @@ from exec_shell import findVarsExec, execCommand
 from match_pat import matchPattern
 
 
-def run(program):
+def run(program, path):
 
-    path = "../../test/testdir4"
     varEnv = {}
     regexEnv = RegexEnv()
 

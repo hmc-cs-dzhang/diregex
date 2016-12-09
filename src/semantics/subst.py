@@ -1,6 +1,4 @@
-import sys
-sys.path.append("../ir")
-sys.path.insert(0, "../parser")
+import src
 
 from ir import *
 from parser import parse

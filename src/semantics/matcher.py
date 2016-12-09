@@ -1,5 +1,5 @@
 import sys
-sys.path.append("../ir")
+#sys.path.append(__file__ + '..')
 
 import os
 import re

@@ -1,2 +1,8 @@
-import sys
-sys.path.insert(0, "../")
+__all__ = ['parser',
+           'assign_parser',
+           'dest_parser',
+           'match_parser',
+           'matchpat_parser',
+           'pattern_parser',
+           'lexemes']
+

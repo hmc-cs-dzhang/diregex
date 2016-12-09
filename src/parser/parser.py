@@ -1,5 +1,4 @@
-import sys
-sys.path.append('../ir')
+import src
 
 from ir import *
 from parsec import *
@@ -16,18 +15,7 @@ def program():
     yield whitespace
     prog = yield many1(statement) << eof
     return Prog(prog)
-"""
-@generate
-def statements():
-    stmts = yield (statement << eof) ^ recursive
-    return stmts
 
-@generate
-def recursive():
-    stmt = yield statement
-    stmts = yield statements
-    return stmt + stmts
-"""
 @generate
 def statement():
     ''' parse a statement, which is either a match tree, destination tree,
