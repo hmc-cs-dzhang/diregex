@@ -10,6 +10,7 @@ from parser import parse, parseAssign, parseMatch, parseDest
 from ir import *
 from regex_env import RegexEnv
 from var_finder import findVars
+from exec_shell import findVarsExec, execCommand
 
 
 def run(program):
@@ -21,6 +22,7 @@ def run(program):
     stmts = parse(program).stmts
     i = 0
     while i < len(stmts):
+
         stmt = stmts[i]
 
         # Read in assignments, and add them to the environment
@@ -30,16 +32,40 @@ def run(program):
         # Once we hit a match, iterate through all the matches, and
         # perform the action specified in the destination tree
         elif type(stmt) is Match:
-            dest = stmts[i + 1]
-            if not type(dest) is Dest:
-                raise TypeError("Match must be followed by a Dest")
 
-            # traverse the destination tree to see specifically what
-            # variables we need to match with
-            usedVars = findVars(dest.tree, varEnv)
+            # find all the remaining variables used to know what to match with
+            usedVars = set()
+            for j in range(i + 1, len(stmts)):
+                if type(stmts[j]) is Dest:
+                    usedVars.update(findVars(stmts[j].tree, varEnv))
+
+                elif type(stmts[j]) is Shell:
+                    usedVars.update(findVarsExec(stmts[j].command))
+
+                else:
+                    raise TypeError("Type %s cannot be used after match" \
+                        % type(stmts[j]).__name__)
+
+            print("used vars is %s" % usedVars)
+
+            '''
+            if type(stmts[i + 1]) is Dest:
+                usedVars = findVars(stmts[i + 1].tree, varEnv)
+
+            elif type(stmts[i + 1]) is Shell:
+                usedVars = findVarsExec(stmts[i + 1].command)
+
+            else:
+            '''
 
             for newVars, newRegex in match(stmt.tree, path, usedVars, varEnv, regexEnv):
-                produceDirTree(dest.tree, path, newVars, newRegex)
+                print("new vars is %s" % newVars)
+                for j in range(i + 1, len(stmts)):
+                    if type(stmts[j]) is Dest:
+                        produceDirTree(stmts[j].tree, path, newVars, newRegex)
+                    elif type(stmts[j]) is Shell:
+                        execCommand(stmts[j].command, newVars, newRegex)
+
             break
 
         elif type(stmt) is Dest:

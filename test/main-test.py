@@ -15,7 +15,11 @@ def setup():
     """ run before each test to clean out the directory """
     eq_(os.path.basename(os.getcwd()), 'testdir4')
     for item in os.scandir():
-        shutil.rmtree(item.path)
+        if os.path.isdir(item.path):
+            shutil.rmtree(item.path)
+        else:
+            os.remove(item.path)
+
 
 def teardown():
     """ run after each test to make sure there was nothing else in the dir"""
@@ -348,3 +352,35 @@ def test11():
     """
 
     run(prog)
+
+@with_setup(setup, teardown)
+def test12():
+    """ combining shell commands and dest trees """
+    setupProg = r"""
+    dest (foo/(
+            foo_src.cpp,
+            foo_test.cpp,
+            delete.me),
+          bar/(
+            bar_src.cpp,
+            bar_test.cpp,
+            delete.me))
+    """
+
+    run(setupProg)
+
+    prog = r"""
+    match */(code=*_src.cpp, test=*_test.cpp, rem=delete.me)
+    !rm {rem}
+    dest new_folder/({code}, {test})
+    """
+
+    run(prog)
+
+    os.remove('new_folder/foo_src.cpp')
+    os.remove('new_folder/foo_test.cpp')
+    os.remove('new_folder/bar_src.cpp')
+    os.remove('new_folder/bar_test.cpp')
+
+    os.rmdir('new_folder')
+

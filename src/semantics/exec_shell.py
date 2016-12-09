@@ -2,27 +2,27 @@ import re
 import os
 import functools
 
-from diregex_parser import parse
-from diregex_semantics import Matcher
-import diregex_ir
+from parser import parse
+from matcher import Matcher
+import ir
 from regex_env import RegexEnv
 
 #os.chdir('../test/testdir3')
 
 def findVarsExec(command):
-    return set(re.findall(r"\\(w+)", command))
+    return set(re.findall(r"\{(\w+)\}", command))
 
-def exec(command, varEnv, regexEnv):
+def execCommand(command, varEnv, regexEnv):
 
     matchedEnvs = []
 
     #for varEnv, regexEnv in matcher.visit(ast, os.getcwd(), emptyEnv):
 
     #    if newEnv(varEnv, regexEnv, matchedEnvs):
+
     matchedEnvs.append((varEnv, regexEnv))
     parsedCommand = replVarsAndRegex(varEnv, regexEnv, command)
-    print(parsedCommand)
-    #os.system(parsedCommand)
+    os.system(parsedCommand)
 
 def newEnv(varEnv, regexEnv, envs):
     ''' returns true if the current environment is not in the list of old envs'''
@@ -38,6 +38,7 @@ def replVarsAndRegex(varEnv, regexEnv, command):
     return replacedRegex
 
 def replVars(varEnv, matchobj):
+
     var = matchobj.group(0)
     newvar = var.strip(r"\{\}")
     path = varEnv[newvar]
