@@ -384,3 +384,28 @@ def test12():
 
     os.rmdir('new_folder')
 
+@with_setup(setup, teardown)
+def test13():
+    """ shell commands with patterns """
+    setupProg = r"""
+    dest foo/(joe.cpp, mike.cpp)
+    """
+
+    run(setupProg)
+
+    prog = r"""
+    match foo/name = <pat=*>.cpp
+    !mkdir \pat
+    !mv {name} \pat
+    """
+
+    run(prog)
+
+    os.remove('joe/joe.cpp')
+    os.remove('mike/mike.cpp')
+
+    os.rmdir('joe')
+    os.rmdir('mike')
+
+    os.rmdir('foo')
+
