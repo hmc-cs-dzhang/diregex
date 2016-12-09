@@ -9,20 +9,19 @@ from regex_env import RegexEnv
 
 #os.chdir('../test/testdir3')
 
-def test(diregex, command):
-    ast = parse(diregex)
-    matcher = Matcher()
-    emptyEnv = RegexEnv()
+
+
+def exec(command, varEnv, regexEnv):
 
     matchedEnvs = []
 
-    for varEnv, regexEnv in matcher.visit(ast, os.getcwd(), emptyEnv):
+    #for varEnv, regexEnv in matcher.visit(ast, os.getcwd(), emptyEnv):
 
-        if newEnv(varEnv, regexEnv, matchedEnvs):
-            matchedEnvs.append((varEnv, regexEnv))
-            parsedCommand = exec(varEnv, regexEnv, command)
-            print(parsedCommand)
-            os.system(parsedCommand)
+    #    if newEnv(varEnv, regexEnv, matchedEnvs):
+    matchedEnvs.append((varEnv, regexEnv))
+    parsedCommand = replVarsAndRegex(varEnv, regexEnv, command)
+    print(parsedCommand)
+    #os.system(parsedCommand)
 
 def newEnv(varEnv, regexEnv, envs):
     ''' returns true if the current environment is not in the list of old envs'''
@@ -31,7 +30,7 @@ def newEnv(varEnv, regexEnv, envs):
             return False
     return True
 
-def exec(varEnv, regexEnv, command):
+def replVarsAndRegex(varEnv, regexEnv, command):
 
     replacedVars = re.sub(r"\{\w+\}", functools.partial(replVars, varEnv), command)
     replacedRegex = re.sub(r"\\[1-9A-Za-z_]+", functools.partial(replRegex, regexEnv), replacedVars)

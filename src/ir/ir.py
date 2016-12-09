@@ -56,6 +56,11 @@ class Assign(Stmt):
     def __init__(self, tree):
         self.tree = tree
 
+class Shell(Stmt):
+    # contains the the string
+    def __init__(self, command):
+        self.command = command
+
 # abstract class, representing the three cases of tree patterns
 class TreePattern(Stmt):
     pass
@@ -106,4 +111,4 @@ class DirName(DirItem):
         self.attr = attr
 
     def __repr__(self):
-        return "DirName(%s)" % self.name
+        return "DirName(%s, %s)" % (self.name, self.attr)

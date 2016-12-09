@@ -43,7 +43,7 @@ def dirDir():
 
 @generate
 def dirItem():
-    '''Parse a directory name'''
+    '''Parse a directory item, which is either a file or a directory'''
     dItem = yield dirFile ^ dirDir ^ dirGlob
     return dItem
 

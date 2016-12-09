@@ -17,7 +17,9 @@ comma      = lexeme(string(','))
 backslash  = lexeme(string('\\'))
 stars      = lexeme(string('**'))
 colon      = lexeme(string(':'))
-eof        = lexeme(regex(r'$'))
+bang       = lexeme(string('!'))
+eol        = lexeme(string('\n'))
+eof        = whitespace >> lexeme(regex(r'$'))
 
 # todo: should be keywords: shouldn't parse something like 'matchhi'
 match_tok  = lexeme(string('match'))

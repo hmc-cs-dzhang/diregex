@@ -9,16 +9,27 @@ from assign_parser import assignment
 
 @generate
 def program():
-    prog = yield whitespace >> many1(statement) << eof
+    yield whitespace
+    prog = yield statements
     return Prog(prog)
+
+@generate
+def statements():
+    stmts = yield (statement << eof) ^ recursive
+    return stmts
+
+@generate
+def recursive():
+    stmt = yield statement
+    stmts = yield statements
+    return stmt + stmts
 
 @generate
 def statement():
     ''' parse a statement, which is either a match tree, destination tree,
-    or an assignment.
-    TODO: add option to execute shell commands '''
-    stmt = yield match ^ dest ^ assign
-    return stmt
+    or an assignment.'''
+    stmt = yield match ^ dest ^ shell ^ assign
+    return [stmt]
 
 @generate
 def match():
@@ -29,6 +40,11 @@ def match():
 def dest():
     d = yield dest_tok >> destTreePattern
     return Dest(d)
+
+@generate
+def shell():
+    s = yield bang >> regex(r'''[^\n$]+''') << (eol | eof)
+    return Shell(s)
 
 @generate
 def assign():
@@ -47,3 +63,4 @@ def parseMatch(st):
 
 def parseDest(st):
     return dest.parse(st)
+

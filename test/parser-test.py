@@ -178,6 +178,37 @@ def testVarMatchDest():
 
     eq_(ast,bst)
 
+def testShellCommand():
+    ''' test parsing a trivial shell command '''
+    ast = Prog([
+        Shell(
+            r'cd {thisfile} {thatfile}')])
 
+    bst = parse(r'''!cd {thisfile} {thatfile}
+        ''')
 
+    eq_(ast, bst)
+
+def testShell2():
+    ''' test a shell command with lines on either side '''
+    ast = Prog([
+        Match(
+            TreePatternChild(
+                DirGlob('foo'),
+                TreePatternDir(
+                    DirGlob('bar'),
+                    'v'))),
+        Shell(r'mv {v} place'),
+        Shell(r'subl {v}'),
+        Dest(
+            TreePatternDir(
+                DirName('top', 'file')))])
+
+    bst = parse(r'''
+        match foo/v=bar
+        !mv {v} place
+        !subl {v}
+        dest top ''')
+
+    eq_(ast, bst)
 

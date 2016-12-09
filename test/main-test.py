@@ -332,3 +332,19 @@ def test10():
     os.remove('top_level/next/deep/PDF4.pdf')
 
     os.removedirs('top_level/next/deep')
+
+
+@with_setup(setup, teardown)
+def test11():
+    """ tests using shell commands """
+    setupProg = r"dest (foo.txt, bar.txt)"
+
+    run(setupProg)
+
+    prog = r"""
+    var = file:*
+    match {var}
+    !rm {var}
+    """
+
+    run(prog)
