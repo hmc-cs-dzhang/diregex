@@ -298,7 +298,6 @@ def test10():
     http://stackoverflow.com/questions/15438347/find-match-variable-filenames-and-move-files-to-respective-directory
     """
 
-    # Use the DSL to create a sample directory
     prog1 = r"""
         dest (
             signed/(
@@ -325,12 +324,14 @@ def test10():
 
     run(prog)
 
+
     os.remove('signed/PDF1_signed.pdf')
     os.remove('signed/PDF2_signed.pdf')
     os.remove('signed/PDF3_signed.pdf')
     os.remove('signed/PDF1.pdf')
     os.remove('signed/PDF2.pdf')
     os.remove('signed/PDF3.pdf')
+
     os.rmdir('signed')
 
     os.remove('top_level/next/deep/PDF4.pdf')
@@ -408,4 +409,38 @@ def test13():
     os.rmdir('mike')
 
     os.rmdir('foo')
+
+@with_setup(setup, teardown)
+def test14():
+    """ produce a parameterized tree structure """
+    prog = r"""
+    matchpat src = [foo, bar]
+    dest <\src>.txt
+    """
+
+    run(prog)
+
+    os.remove('foo.txt')
+    os.remove('bar.txt')
+
+@with_setup(setup, teardown)
+def test15():
+    """ parameterized tree structure with different levels """
+
+    prog = r"""
+    matchpat class = [Math189, DSLs, PLs],
+                subfolder = [Homework, Notes]
+    dest <\class>/<\subfolder>/
+    """
+
+    run(prog)
+
+    # a program to remove the files
+
+    remProg = r"""
+    match top=*/(hw = Homework, nt = Notes)
+    !rm -r {top}
+    """
+
+    run(remProg)
 

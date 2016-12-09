@@ -2,7 +2,6 @@
 
 ####  Priorities (in no particular order)
 1. Add dest trees parameterized on lists, rather than matches
-2. Improve shell options
 3. Refer to ast variables in dest trees
 4. Add renaming syntax {file.txt -> newfile.txt}, for example
 5. Bug with generators not restarting if one of the matched files was moved

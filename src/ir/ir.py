@@ -61,6 +61,18 @@ class Shell(Stmt):
     def __init__(self, command):
         self.command = command
 
+class MatchPat(Stmt):
+    def __init__(self, params):
+        self.params = params
+
+class Params(Node):
+    def __init__(self, name, matches):
+        self.name = name
+        self.matches = matches
+
+"""matchp name = [joe, tim, mike], year = [2011, 2012, 2013] """
+
+
 # abstract class, representing the three cases of tree patterns
 class TreePattern(Stmt):
     pass

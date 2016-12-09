@@ -1,18 +1,22 @@
+import sys
+sys.path.append('../ir')
+
 from ir import *
 from parsec import *
 from lexemes import *
 from match_parser import matchTreePattern
 from dest_parser import destTreePattern
 from assign_parser import assignment
+from matchpat_parser import matchPattern
 
 """ Parse a diregex program, calls the individual statement parsers """
 
 @generate
 def program():
     yield whitespace
-    prog = yield statements
+    prog = yield many1(statement) << eof
     return Prog(prog)
-
+"""
 @generate
 def statements():
     stmts = yield (statement << eof) ^ recursive
@@ -23,18 +27,23 @@ def recursive():
     stmt = yield statement
     stmts = yield statements
     return stmt + stmts
-
+"""
 @generate
 def statement():
     ''' parse a statement, which is either a match tree, destination tree,
     or an assignment.'''
-    stmt = yield match ^ dest ^ shell ^ assign
-    return [stmt]
+    stmt = yield matchpat ^ match ^ dest ^ shell ^ assign
+    return stmt
 
 @generate
 def match():
     m = yield match_tok >> matchTreePattern
     return Match(m)
+
+@generate
+def matchpat():
+    m = yield matchPattern
+    return MatchPat(m)
 
 @generate
 def dest():

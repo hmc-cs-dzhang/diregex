@@ -212,3 +212,33 @@ def testShell2():
 
     eq_(ast, bst)
 
+def testMatchPat():
+    ''' test a trivial case of matching a pattern '''
+    ast = Prog([
+        MatchPat(
+            [Params(
+                'name',
+                ['joe', 'bob', 'timmy'])])])
+
+    bst = parse(r'''
+        matchpat name = [joe, bob, timmy]
+        ''')
+
+    eq_(ast, bst)
+
+def testMatchPat2():
+    ''' test multiple matches '''
+    ast = Prog([
+        MatchPat(
+            [Params(
+                'name',
+                ['joe', 'bob', 'timmy']),
+            Params(
+                'year',
+                ['2012', '2013'])])])
+
+    bst = parse(r'''
+        matchpat name = [joe, bob, timmy], year = [2012, 2013]
+        ''')
+
+    eq_(ast, bst)

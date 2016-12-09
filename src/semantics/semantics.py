@@ -11,6 +11,7 @@ from ir import *
 from regex_env import RegexEnv
 from var_finder import findVars
 from exec_shell import findVarsExec, execCommand
+from match_pat import matchPattern
 
 
 def run(program):
@@ -59,7 +60,7 @@ def run(program):
             '''
 
             for newVars, newRegex in match(stmt.tree, path, usedVars, varEnv, regexEnv):
-                print("new vars is %s" % newVars)
+
                 for j in range(i + 1, len(stmts)):
                     if type(stmts[j]) is Dest:
                         produceDirTree(stmts[j].tree, path, newVars, newRegex)
@@ -70,6 +71,19 @@ def run(program):
 
         elif type(stmt) is Dest:
             produceDirTree(stmt.tree, path, varEnv, regexEnv)
+
+        elif type(stmt) is MatchPat:
+
+            for newRegex in matchPattern(stmt.params):
+
+                for j in range(i + 1, len(stmts)):
+                    if type(stmts[j]) is Dest:
+                        produceDirTree(stmts[j].tree, path, {}, newRegex)
+                    elif type(stmts[j]) is Shell:
+                        execCommand(stmts[j].command, {}, newRegex)
+
+            break
+            print("nothing found")
 
         else:
             raise TypeError("Unknown type %s" % type(stmt).__name__)
