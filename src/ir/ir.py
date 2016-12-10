@@ -78,6 +78,7 @@ class Params(Node):
 
 
 # abstract class, representing the three cases of tree patterns
+# See the approximate grammar in the top of match_parser.py
 class TreePattern(Stmt):
     pass
 
