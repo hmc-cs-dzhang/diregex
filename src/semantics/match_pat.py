@@ -1,5 +1,8 @@
 from regex_env import RegexEnv
 
+""" Uses generators to iterate through every possibility listed in the matchname
+statement """
+
 def matchPattern(params):
 
     regexEnv = RegexEnv()
@@ -10,6 +13,8 @@ def matchPattern(params):
         yield regexEnv
 
 def matchPatternHelper(params):
+    """ Recursively calls on smaller inputs, iterates through all the,
+    each time returning a new regex environment """
     if params == []:
 
         yield {}

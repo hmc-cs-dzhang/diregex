@@ -1,6 +1,15 @@
 import re
 from copy import deepcopy
 
+"""
+An object that holds a set of regex patterns and their names for an entire
+pattern.  Also holds a list of groups, in case I want to access them by their
+index in the future.  Also holds utility methods to convert from globs to
+Python-friendly regular expressions.  Because of this, in the future it should
+be possible to allow users to search by regular expressions if they want more
+specificity than globs allow.
+"""
+
 class RegexEnv(object):
 
     def __init__(self):

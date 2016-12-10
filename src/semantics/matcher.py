@@ -190,6 +190,12 @@ def match(tree, path, varsUsed, varEnv=None, regexEnv=None):
         print("No matches found")
 
 def newEnv(varEnv, varEnvs):
+    """
+    makes sure that you only return distinct results by checking that this
+    environment has occurred before
+    todo: remove this, I think by searching through the dest trees to check what
+    variables will be required, this method is no check is no longer necessary
+    """
     for otherVarEnv in varEnvs:
         if varEnv == otherVarEnv:
             return False
@@ -203,12 +209,5 @@ def allMatches(tree, path, namedVars, varEnv=None):
     for varEnv, _ in match(tree, path, namedVars, varEnv):
         baseVarEnv = {v: os.path.basename(p) for v, p in varEnv.items()}
         matchList.append(baseVarEnv)
-        '''
-        for var in varEnv:
-            path = varEnv[var]
-            if var in varSets:
-                varSets[var] = {path}
-            else:
-                varSets[var].add(path)
-        '''
+
     return matchList
