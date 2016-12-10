@@ -2,21 +2,14 @@ from lexemes import *
 from ir import *
 from parsec import *
 
+""" parses a destination tree.  Similar to a match tree with a couple notable exceptions:
+    1) Uses DirNames instead of DirGlobs, since you shouldn't specify a
+      destination with a glob
+    2) foo/ specifies a directory, foo is a folder.  In the other parser,
+      you need the attributes dir: and file:, otherwise its ambiguous
+    3) The descendant pattern **/ is invalid
 
-''' My current grammar for source trees (matches)
-
-<tree-pattern> : <tree-pattern-without-var>
-
-<tree-pattern-without-var> : <dir-name>                         # DirName
-                           | <dir-name> SLASH <tree-pattern>    # Child
-                           | LPAREN <tree-pattern-list> RPAREN  # List
-                           | LBRACE IDENT RBRACE                # Variable
-
-<tree-pattern-list> : | <tree-pattern>
-                      | <tree-pattern> COMMA <tree-pattern-list>
-
-<dir-name> : DIRNAME
-'''
+"""
 
 @generate
 def dirName():
@@ -59,7 +52,6 @@ def treePatternDirWithoutSlash():
 @generate
 def treePatternDirWithSlash():
     dName = yield treePatternDirWithoutSlash << slash
-    #if dName.attr != 'file':
     dName.attr = 'dir'
     return dName
 

@@ -3,7 +3,8 @@ from ir import *
 from parsec import *
 
 
-''' My current grammar for source trees (matches)
+'''
+Parser for match trees.  Here is my current grammar for match trees:
 
 <tree-pattern> : IDENT EQUALS <tree-pattern-without-var>
                | <tree-pattern-without-var>
@@ -17,7 +18,10 @@ from parsec import *
 <tree-pattern-list> : | <tree-pattern>
                       | <tree-pattern> COMMA <tree-pattern-list>
 
-<dir-glob> : GLOB
+<dir-glob> : <attr> COLON GLOB
+
+<attr> : FILE_TOK
+       | DIR_TOK
 '''
 
 

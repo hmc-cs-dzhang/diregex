@@ -1,11 +1,13 @@
 from lexemes import *
 
-@generate
-def nonPat():
-    '''
-    matches with parts of the glob that are not patterns
-    '''
-    yield many(none_of('<'))
+"""
+Used to search through a glob, looking for the named patterns.  The parser
+is the only one that is not directly called by the main parser, but is instead
+used the by subst to add all the globnames and expressions to the regex
+environment
+"""
+
+
 
 @generate
 def namedPattern():
@@ -16,6 +18,13 @@ def namedPattern():
     name = yield string('<') >> ident << string('=')
     pat = yield glob << string('>')
     return (name, pat)
+
+@generate
+def nonPat():
+    '''
+    matches with parts of the glob that are not patterns
+    '''
+    yield many(none_of('<'))
 
 @generate
 def backreference():

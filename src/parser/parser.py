@@ -8,7 +8,13 @@ from dest_parser import destTreePattern
 from assign_parser import assignment
 from matchpat_parser import matchPattern
 
-""" Parse a diregex program, calls the individual statement parsers """
+"""
+Parse a diregex program, calls the individual statement parsers
+Such statements can be a Match (tree pattern to match), MatchPat (set of
+parameters to match with), Assign (variable assingment), Dest (destination
+tree), or Shell (shell command).  See other parsers and ir for more information
+about the grammar and abstarct syntax
+"""
 
 @generate
 def program():
