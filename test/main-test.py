@@ -5,6 +5,7 @@ import shutil
 from semantics import run
 
 os.chdir('../test/testdir4')
+path = os.getcwd()
 
 def checkEmpty(directory="./"):
     dirItems = os.listdir(directory)
@@ -33,7 +34,7 @@ def testDest():
     dest parent/(child1/, child2/)
     """
 
-    run(prog)
+    run(prog, path)
     os.rmdir("parent/child2")
     os.removedirs("parent/child1")
 
@@ -53,7 +54,7 @@ def test2():
             bar_test.cpp))
     """
 
-    run(setupProg)
+    run(setupProg, path)
 
     prog = r"""
     match (src/srcfile=<pat=*>.cpp,
@@ -62,7 +63,7 @@ def test2():
 
     """
 
-    run(prog)
+    run(prog, path)
 
     os.remove('foo/foo.cpp')
     os.remove('foo/foo_test.cpp')
@@ -87,7 +88,7 @@ def test3():
             bar_test.cpp))
     """
 
-    run(setupProg)
+    run(setupProg, path)
 
     prog = r"""
     srcfile = <pat=*>.cpp
@@ -96,7 +97,7 @@ def test3():
     dest <\pat>/({srcfile}, {testfile})
     """
 
-    run(prog)
+    run(prog, path)
 
     os.remove('foo/foo.cpp')
     os.remove('foo/foo_test.cpp')
@@ -116,7 +117,7 @@ def test4():
           bar/(bar.cpp,bar_test.cpp),
           dummy/(dummy1.cpp,dummy_test.cpp))
     """
-    run(setupProg)
+    run(setupProg, path)
 
     prog = r"""
     match <pat=*>/(
@@ -125,7 +126,7 @@ def test4():
     dest (src/{srcfile}, test/{testfile})
     """
 
-    run(prog)
+    run(prog, path)
 
     os.remove('src/foo.cpp')
     os.remove('src/bar.cpp')
@@ -148,7 +149,7 @@ def test5():
           test/(foo_test.cpp, bar_test.cpp))
     """
 
-    run(setupProg)
+    run(setupProg, path)
 
     prog = r"""
     srcfile = <pat=*>.cpp
@@ -157,7 +158,7 @@ def test5():
     dest <\pat>/({srcfile}, {testfile}, README.txt)
     """
 
-    run(prog)
+    run(prog, path)
 
     os.remove('foo/foo.cpp')
     os.remove('foo/foo_test.cpp')
@@ -187,7 +188,7 @@ def test6():
     dest folder2/{f}
     """
     # should move hey and hi into folder2, but keep dont_move in folder1
-    run(prog)
+    run(prog, path)
 
     os.remove('folder2/hey.txt')
     os.remove('folder2/hi.txt')
@@ -207,7 +208,7 @@ def test7():
     dest src/<\pat>/{f}
     """
 
-    run(prog)
+    run(prog, path)
 
     os.remove('src/foo/foo.txt')
     os.remove('src/bar/bar.txt')
@@ -232,7 +233,7 @@ def test8():
     dest <\year>/<\sem>/<\class>/{syllabus}
     """
 
-    run(prog)
+    run(prog, path)
 
     os.remove('2016/fall/DSLs/DSLs_fall_2016.txt')
     os.remove('2016/fall/PLs/PLs_fall_2016.txt')
@@ -271,14 +272,14 @@ def test9():
                 image2.png,
                 image3.png))
     """
-    run(setupProg)
+    run(setupProg, path)
 
     prog = r"""
     match <fldr=[0-9]>/.temp/img=image[0-9].png
     dest <\fldr>/{img}
     """
 
-    run(prog)
+    run(prog, path)
 
     os.remove('1/image1.png')
     os.remove('1/image2.png')
@@ -314,7 +315,7 @@ def test10():
                         PDF4.pdf))))
     """
 
-    run(prog1)
+    run(prog1, path)
 
     prog = r"""
     match (signed/<name=PDF[0-9]>_signed.pdf,
@@ -322,7 +323,7 @@ def test10():
     dest signed/{pdf}
     """
 
-    run(prog)
+    run(prog, path)
 
 
     os.remove('signed/PDF1_signed.pdf')
@@ -344,7 +345,7 @@ def test11():
     """ tests using shell commands """
     setupProg = r"dest (foo.txt, bar.txt)"
 
-    run(setupProg)
+    run(setupProg, path)
 
     prog = r"""
     var = file:*
@@ -352,7 +353,7 @@ def test11():
     !rm {var}
     """
 
-    run(prog)
+    run(prog, path)
 
 @with_setup(setup, teardown)
 def test12():
@@ -368,7 +369,7 @@ def test12():
             delete.me))
     """
 
-    run(setupProg)
+    run(setupProg, path)
 
     prog = r"""
     match */(code=*_src.cpp, test=*_test.cpp, rem=delete.me)
@@ -376,7 +377,7 @@ def test12():
     dest new_folder/({code}, {test})
     """
 
-    run(prog)
+    run(prog, path)
 
     os.remove('new_folder/foo_src.cpp')
     os.remove('new_folder/foo_test.cpp')
@@ -392,7 +393,7 @@ def test13():
     dest foo/(joe.cpp, mike.cpp)
     """
 
-    run(setupProg)
+    run(setupProg, path)
 
     prog = r"""
     match foo/name = <pat=*>.cpp
@@ -400,7 +401,7 @@ def test13():
     !mv {name} \pat
     """
 
-    run(prog)
+    run(prog, path)
 
     os.remove('joe/joe.cpp')
     os.remove('mike/mike.cpp')
@@ -414,11 +415,11 @@ def test13():
 def test14():
     """ produce a parameterized tree structure """
     prog = r"""
-    matchpat src = [foo, bar]
+    matchname src = [foo, bar]
     dest <\src>.txt
     """
 
-    run(prog)
+    run(prog, path)
 
     os.remove('foo.txt')
     os.remove('bar.txt')
@@ -428,12 +429,12 @@ def test15():
     """ parameterized tree structure with different levels """
 
     prog = r"""
-    matchpat class = [Math189, DSLs, PLs],
+    matchname class = [Math189, DSLs, PLs],
                 subfolder = [Homework, Notes]
     dest <\class>/<\subfolder>/
     """
 
-    run(prog)
+    run(prog, path)
 
     # a program to remove the files
 
@@ -442,5 +443,5 @@ def test15():
     !rm -r {top}
     """
 
-    run(remProg)
+    run(remProg, path)
 

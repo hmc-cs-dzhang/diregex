@@ -1,0 +1,38 @@
+#!/usr/bin/env python3
+import os
+import argparse
+from src.semantics import semantics
+
+
+def main():
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("program", help="the program to be executed")
+    parser.add_argument("-p", "--path", help="the path of the file")
+    args = parser.parse_args()
+    '''
+    if not args.run:
+        print("Welcome to Diregex")
+        prog = ""
+
+        while True:
+            line = input('>>> ')
+
+            if not line:
+                break
+
+            prog += line + '\n'
+    '''
+
+    f = open(args.program, 'r')
+    prog = f.read()
+
+    if not args.path:
+        args.path = os.getcwd()
+
+    semantics.run(prog, args.path)
+
+
+
+if __name__ == '__main__':
+    main()

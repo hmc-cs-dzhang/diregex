@@ -221,7 +221,7 @@ def testMatchPat():
                 ['joe', 'bob', 'timmy'])])])
 
     bst = parse(r'''
-        matchpat name = [joe, bob, timmy]
+        matchname name = [joe, bob, timmy]
         ''')
 
     eq_(ast, bst)
@@ -238,7 +238,7 @@ def testMatchPat2():
                 ['2012', '2013'])])])
 
     bst = parse(r'''
-        matchpat name = [joe, bob, timmy], year = [2012, 2013]
+        matchname name = [joe, bob, timmy], year = [2012, 2013]
         ''')
 
     eq_(ast, bst)

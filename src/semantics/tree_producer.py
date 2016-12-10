@@ -47,10 +47,7 @@ class Producer(object):
 
         name = regexEnv.replaceBackreferences(RegexEnv.translateOnlyBackrefs(node.name))
 
-        if name in os.listdir(path):
-            print(path)
-            print("directory " + name + " already exists")
-        else:
+        if name not in os.listdir(path):
             # create a new directory
             if not node.attr or node.attr == 'dir':
                 os.mkdir(os.path.join(path, name))

@@ -1,14 +1,11 @@
 ## List of things to do for my DSL
 
 ####  Priorities (in no particular order)
-1. Add dest trees parameterized on lists, rather than matches
 3. Refer to ast variables in dest trees
 4. Add renaming syntax {file.txt -> newfile.txt}, for example
 5. Bug with generators not restarting if one of the matched files was moved
 6. --dry-run option
 1. If user didn't specify a variable, should it return the top node?
-1. Make sure it's a valid program (e.g. all variables refer to something) before running it
-2. Specify where the directory is!
 
 
 #### Deprioritized

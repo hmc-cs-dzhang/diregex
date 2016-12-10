@@ -25,11 +25,11 @@ eol        = lexeme(string('\n'))
 eof        = whitespace >> lexeme(regex(r'$'))
 
 # todo: should be keywords: shouldn't parse something like 'matchhi'
-match_tok    = lexeme(string('match'))
-dest_tok     = lexeme(string('dest'))
-file_tok     = lexeme(string('file'))
-dir_tok      = lexeme(string('dir'))
-matchpat_tok = lexeme(string('matchpat'))
+match_tok     = lexeme(string('match'))
+dest_tok      = lexeme(string('dest'))
+file_tok      = lexeme(string('file'))
+dir_tok       = lexeme(string('dir'))
+matchname_tok = lexeme(string('matchname'))
 
 globExpr    = r'[A-Za-z0-9_\*\?\[\]\-\.\!]+'
 identExpr   = r'[A-Za-z_][A-Za-z_0-9]*'       # same as Python's identifiers

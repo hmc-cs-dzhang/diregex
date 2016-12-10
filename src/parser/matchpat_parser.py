@@ -4,7 +4,7 @@ from parsec import *
 
 @generate
 def matchPattern():
-    patternList = yield matchpat_tok >> sepBy(params, comma)
+    patternList = yield matchname_tok >> sepBy(params, comma)
     return patternList
 
 @generate
