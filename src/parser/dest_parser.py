@@ -1,6 +1,3 @@
-from sys import path
-path.append(__file__ + '../ir')
-
 from lexemes import *
 from ir import *
 from parsec import *

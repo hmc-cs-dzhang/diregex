@@ -2,25 +2,11 @@ from lexemes import *
 from ir import *
 from parsec import *
 
-
-''' My current grammar for source trees (matches)
-
-<assignment> : IDENT EQUALS <tree-pattern-without-var>
-
-<tree-pattern> : IDENT EQUALS <tree-pattern-without-var>
-               | <tree-pattern-without-var>
-
-<tree-pattern-without-var> : <dir-name>                         # DirGlob
-                           | <dir-name> SLASH <tree-pattern>    # Child
-                           | DOUBLE_STAR SLASH <tree-pattern>   # Descendant
-                           | LPAREN <tree-pattern-list> RPAREN  # List
-                           | LBRACE IDENT RBRACE                # Variable
-
-<tree-pattern-list> : | <tree-pattern>
-                      | <tree-pattern> COMMA <tree-pattern-list>
-
-<dir-name> : GLOB
-'''
+""" The parser is for assignment statements, like
+  var = top/(tree=middle, **/foo.cpp)
+  Very similar to match_parser, but creates a slightly different abstract syntax.
+  (See grammar in match_parser.py)
+"""
 
 
 @generate
@@ -104,7 +90,7 @@ def treePattern():
 
 @generate
 def assignment():
-    ''' parse an arbitrary tree pattern '''
+    ''' parse an arbitrary assignment tree pattern '''
     tpat = yield tPatWithVar
     return tpat
 
