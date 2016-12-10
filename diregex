@@ -1,37 +1,50 @@
 #!/usr/bin/env python3
 import os
+import sys
 import argparse
+from parsec import *
 from src.semantics import semantics
 
 
 def main():
-
+    """
+    The main function for diregex.  Reads in a file containing the program
+    and a path to the program execution.
+    """
     parser = argparse.ArgumentParser()
     parser.add_argument("program", help="the program to be executed")
-    parser.add_argument("-p", "--path", help="the path of the file")
+    parser.add_argument("-p", "--path", help="the path to where the matches should occur")
     args = parser.parse_args()
-    '''
-    if not args.run:
-        print("Welcome to Diregex")
-        prog = ""
 
-        while True:
-            line = input('>>> ')
+    # read in the program
+    try:
+        f = open(args.program, 'r')
+        prog = f.read()
+    except IOError:
+        print('[IOError] cannot open file %s' % args.program)
+        sys.exit()
 
-            if not line:
-                break
-
-            prog += line + '\n'
-    '''
-
-    f = open(args.program, 'r')
-    prog = f.read()
-
+    # the default path, if none is provided, is the current directory
     if not args.path:
         args.path = os.getcwd()
 
-    semantics.run(prog, args.path)
+    # run the program, catch an errors and print them nicely
+    try:
+        semantics.run(prog, args.path)
+    except ParseError as err:
+        fail(err, "Syntax Error")
+    except BaseException as err:
+        fail(err)
+        print(type(err))
+        print(err.__dict__)
+        print(err)
+        sys.exit()
 
+def fail(err, errType=None):
+    if not errType:
+        errType = type(err).__name__
+    print("[%s] %s" % (errType, str(err)))
+    sys.exit()
 
 
 if __name__ == '__main__':

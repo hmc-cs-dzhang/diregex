@@ -12,11 +12,19 @@ from match_pat import matchPattern
 
 
 def run(program, path):
+    """ The semantics function.  Runs a diregex program by parsing it, and then
+    calling the various visitor methods."""
 
     varEnv = {}
     regexEnv = RegexEnv()
 
+    # parse the program and extract the list of statements
     stmts = parse(program).stmts
+
+    # There are three main semantic patterns:
+    # 1) Match, followed by a Dest or shell command
+    # 2) MatchPat, followed by a dest or shell command
+    # 3) Dest, just a 'script' to create a directory tree
     i = 0
     while i < len(stmts):
 
@@ -43,18 +51,9 @@ def run(program, path):
                     raise TypeError("Type %s cannot be used after match" \
                         % type(stmts[j]).__name__)
 
-            print("used vars is %s" % usedVars)
-
-            '''
-            if type(stmts[i + 1]) is Dest:
-                usedVars = findVars(stmts[i + 1].tree, varEnv)
-
-            elif type(stmts[i + 1]) is Shell:
-                usedVars = findVarsExec(stmts[i + 1].command)
-
-            else:
-            '''
-
+            # Once we've gathered all the variables needed for the match,
+            # perform the match.  Iterate through the dest and exec shell statements,
+            # repeating each time there is a new match
             for newVars, newRegex in match(stmt.tree, path, usedVars, varEnv, regexEnv):
 
                 for j in range(i + 1, len(stmts)):
@@ -65,9 +64,7 @@ def run(program, path):
 
             break
 
-        elif type(stmt) is Dest:
-            produceDirTree(stmt.tree, path, varEnv, regexEnv)
-
+        # A MatchPat statement
         elif type(stmt) is MatchPat:
 
             for newRegex in matchPattern(stmt.params):
@@ -79,43 +76,15 @@ def run(program, path):
                         execCommand(stmts[j].command, {}, newRegex)
 
             break
+            # in case there were no matches
             print("nothing found")
+
+        # Just a dest statement
+        elif type(stmt) is Dest:
+            produceDirTree(stmt.tree, path, varEnv, regexEnv)
 
         else:
             raise TypeError("Unknown type %s" % type(stmt).__name__)
 
         i += 1
 
-
-class Interpreter(object):
-
-    def visit(self, node, path, env):
-        method_name = 'visit_' + type(node).__name__
-        visitor = getattr(self, method_name, self.generic_visit)
-        return visitor(node, path, env)
-
-    def generic_visit(self, node, path, env):
-        raise Exception('No visit_{} method'.format(type(node).__name__))
-
-    def visit_Prog(self, node, path, env):
-        for stmt in node.stmts:
-            env = self.visit(stmt, path, env)
-        return env
-
-    def visit_Match(self, node, path, env):
-        return match(node.tree, path, env)
-
-    def visit_Dest(self, node, path, env):
-        return produceDirTree(node.tree, path, env)
-
-    def visit_Assign(self, node, path, env):
-        env = updateEnv(node.tree, env)
-        #print(env)
-        return env
-
-'''
-def run(ast, path, env):
-    interpreter = Interpreter()
-    interpreter.visit(ast, path, env)
-    print("done")
-'''
