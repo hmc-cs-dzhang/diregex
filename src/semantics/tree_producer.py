@@ -4,6 +4,10 @@ from matcher import *
 from ir import *
 from regex_env import RegexEnv
 
+"""
+Creates a tree based on a Dest statement's tree pattern.
+"""
+
 class Producer(object):
 
     def visit(self, node, path, varEnv, regexEnv):

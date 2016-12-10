@@ -9,8 +9,8 @@ from copy import deepcopy
 
 class Subst(object):
     '''
-    All this class does is iterate through the tree, and update the environment
-    with new named nodes
+    This class iterates through the tree, and updates the regex Environment
+    and variable environments with new named nodes
     '''
 
     def visit(self, node, varEnv, regexEnv):
@@ -28,6 +28,7 @@ class Subst(object):
             varEnv.update({node.var: node})
 
     def visit_TreePatternChild(self, node, varEnv, regexEnv):
+        ''' visit the current directory and the children ones '''
         self.visit(node.treePattern, varEnv, regexEnv)
         self.visit(node.dirItem, varEnv, regexEnv)
         if node.var:
@@ -65,6 +66,9 @@ class Subst(object):
 
 
 def updateEnv(node, varEnv=None, regexEnv=None):
+    ''' main method called by semantics.  Given a var environment and a
+    regex environment, creates a Subst tree visitor, adds to these
+    environments, and returns them '''
     subst = Subst()
 
     if not varEnv:
@@ -75,21 +79,4 @@ def updateEnv(node, varEnv=None, regexEnv=None):
 
     subst.visit(node, varEnv, regexEnv)
     return varEnv, regexEnv
-'''
-def test():
-    subst = Subst()
 
-    ast = parse("srcfile=<pat=*>.cpp")
-
-    env = {}
-    subst.visit(ast, env)
-
-    bst = parse("testfile=<\pat>_test.cpp")
-    subst.visit(bst, env)
-
-    cst = parse(r"list=(src/{srcfile}, test/{testfile})")
-    subst.visit(cst, env)
-    print(env)
-
-test()
-'''

@@ -1,9 +1,3 @@
-## Intermediate Representation for Diregex
-## Used this as guide:
-##  https://ruslanspivak.com/lsbasi-part7/
-
-# See diregex_parser for grammar details
-
 
 # abstact class for a node of the AST
 class Node(object):
@@ -15,6 +9,7 @@ class Node(object):
         return self.prettyPrint(0)
 
     def prettyPrint(self, n):
+        ''' pretty print on new lines for debugging purposes '''
         tab = "  "
         name = type(self).__name__
         st = tab*n + "%s" % name + "(\n"
@@ -29,6 +24,7 @@ class Node(object):
         return st
 
 class Prog(Node):
+    ''' a program consists of a set of statements '''
     def __init__(self, stmts):
         self.stmts = stmts
 
@@ -41,23 +37,32 @@ class Prog(Node):
         return True
 
 class Stmt(Node):
+    '''
+    A statement is either a Match, a Dest, Assign, Shell, or MatchPat
+    Match, Dest, and Assign all primarily hold tree patterns.
+    MatchPat holds params, and are meant for iterating through lists to create
+    a destination tree.
+    A shell merely holds the string to be executed by the commad line.
+    '''
     pass
 
 class Match(Stmt):
+    ''' a match tree '''
     def __init__(self, tree):
         self.tree = tree
 
 class Dest(Stmt):
+    ''' a destination tree '''
     def __init__(self, tree):
         self.tree = tree
 
 class Assign(Stmt):
-    # The variable name is stored in the root node of the tree
+    ''' The variable name is stored in the root node of the tree '''
     def __init__(self, tree):
         self.tree = tree
 
 class Shell(Stmt):
-    # contains the the string
+    ''' contains the string to be executed on the command line'''
     def __init__(self, command):
         self.command = command
 
@@ -70,7 +75,6 @@ class Params(Node):
         self.name = name
         self.matches = matches
 
-"""matchp name = [joe, tim, mike], year = [2011, 2012, 2013] """
 
 
 # abstract class, representing the three cases of tree patterns
@@ -107,9 +111,11 @@ class TreePatternVar(TreePattern):
         self.var = var
 
 class DirItem(Node):
+    """ Either a DirGlob or a DirName """
     pass
 
 class DirGlob(DirItem):
+    """ A dirItem specified by a glob.  Used in matches and assignments"""
     def __init__(self, glob, attr=None):
         self.glob = glob
         self.attr = attr
@@ -118,6 +124,8 @@ class DirGlob(DirItem):
         return "DirGlob(%s)" % self.glob
 
 class DirName(DirItem):
+    """ A dirItem specified by a name, as opposed to a glob or a regular
+    expression.  Used in dest trees"""
     def __init__(self, name, attr=None):
         self.name = name
         self.attr = attr
